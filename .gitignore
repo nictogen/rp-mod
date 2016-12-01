@@ -24,4 +24,4 @@ gradlew.bat
 eclipse
 run
 *.txt
-
+.gitignore~
