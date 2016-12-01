@@ -1,6 +1,6 @@
 package com.afg.rpmod.jobs;
 
-import com.afg.rpmod.IPlayerData;
+import com.afg.rpmod.capabilities.IPlayerData;
 
 import net.minecraft.entity.player.EntityPlayer;
 

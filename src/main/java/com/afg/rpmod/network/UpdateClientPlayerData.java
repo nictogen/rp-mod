@@ -9,8 +9,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import com.afg.rpmod.IPlayerData;
-import com.afg.rpmod.IPlayerData.PlayerData;
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 
 public class UpdateClientPlayerData implements IMessage{
 	private NBTTagCompound tag;

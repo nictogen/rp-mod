@@ -16,8 +16,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-import com.afg.rpmod.IPlayerData.PlayerData;
-import com.afg.rpmod.IPlayerData.Storage;
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
+import com.afg.rpmod.capabilities.IPlayerData.Storage;
 import com.afg.rpmod.network.UpdateClientPlayerData;
 import com.afg.rpmod.proxy.CommonProxy;
 

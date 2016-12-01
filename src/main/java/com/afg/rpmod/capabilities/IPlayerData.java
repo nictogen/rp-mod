@@ -1,4 +1,4 @@
-package com.afg.rpmod;
+package com.afg.rpmod.capabilities;
 
 import javax.annotation.Nullable;
 
@@ -12,6 +12,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import com.afg.rpmod.RpMod;
 import com.afg.rpmod.jobs.Job;
 import com.afg.rpmod.network.UpdateClientPlayerData;
 

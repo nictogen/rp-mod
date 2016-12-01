@@ -9,7 +9,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import com.afg.rpmod.IPlayerData;
+import com.afg.rpmod.capabilities.IPlayerData;
 
 public class InfoOverlay extends Gui {
 
