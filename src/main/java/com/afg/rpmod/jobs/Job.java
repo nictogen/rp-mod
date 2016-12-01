@@ -11,7 +11,7 @@ public abstract class Job {
 		this.player = player;
 	}
 	//List of all the jobs, for translating to NBT to save and send through packets
-	private static List<JobType> jobTypeList = new ArrayList<JobType>();
+	private static JobType[] jobTypeList = {JobType.UNEMPLOYED};
 
 	/**
 	 * Bridge method to create a new job instance
@@ -20,12 +20,16 @@ public abstract class Job {
 	 * @return the job
 	 */
 	public static <T extends Job> T createJob(int jobID, EntityPlayer player){
-		JobType type = jobTypeList.get(jobID);
+		JobType type = jobTypeList[jobID];
 		return type.createJob(player);
 	}
-	
+
 	public abstract double getIncome();
 
+	public abstract void onUpdate();
+
+	public abstract String getName();
+	
 	public EntityPlayer getPlayer(){
 		return this.player;
 	}
@@ -35,9 +39,9 @@ public abstract class Job {
 
 
 	//Enum of jobs that serve as a factory. Probs overkill but w/e
-	public enum JobType {
+	public static enum JobType {
 		//Declaration of Types
-		UNEMPLOYED(1, Unemployed.class);
+		UNEMPLOYED(0, Unemployed.class);
 		//Variables for JobType
 		private int id;
 		private Class<? extends Job> job;
@@ -45,7 +49,7 @@ public abstract class Job {
 		//Constructor
 		JobType(int id, Class<? extends Job> job){
 			this.id = id;
-			jobTypeList.add(this);
+			this.job = job;
 		}
 
 		//Factory

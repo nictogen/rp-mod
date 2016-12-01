@@ -31,9 +31,15 @@ public interface IPlayerData {
 
 	public Job getJob();
 
+	public void setJob(Job job);
+
 	public int getJobLvl();
 
+	public void setJobLvl(int level);
+
 	public int getJobXP();
+
+	public void setJobXP(int xp);
 
 	/**
 	 * Default NBTStorage required by Forge (Just defers to instance)
@@ -81,15 +87,15 @@ public interface IPlayerData {
 			this.money = nbt.getInteger("money");
 			this.bankMoney = nbt.getInteger("bankmoney");
 			int jobType = nbt.getInteger("job");
-			if(this.job == null || this.job.getType().getID() != jobType)
+			if(this.job == null || this.job.getType().getID() != jobType){
 				this.job = Job.createJob(jobType, this.player);
+			}
 			int jobRank = nbt.getInteger("jobxp");
 			int jobXP = nbt.getInteger("joblvl");
-			this.sync();
 		}
 
 		public void sync(){
-			if(this.player.worldObj.isRemote)
+			if(!this.player.worldObj.isRemote)
 				RpMod.networkWrapper.sendTo(new UpdateClientPlayerData(this), (EntityPlayerMP) this.player);
 		}
 
@@ -113,22 +119,6 @@ public interface IPlayerData {
 		}
 
 		@Override
-		public void setMoney(double amount) {
-			this.money = amount;
-			this.sync();
-		}
-
-		@Override
-		public double getBankMoney() {
-			return this.bankMoney;
-		}
-
-		@Override
-		public void setBankMoney(double amount) {
-			this.bankMoney = amount;
-			this.sync();
-		}
-		@Override
 		public Job getJob() {
 			return this.job;
 		}
@@ -139,6 +129,38 @@ public interface IPlayerData {
 		@Override
 		public int getJobXP() {
 			return this.jobXP;
+		}
+
+		@Override
+		public double getBankMoney() {
+			return this.bankMoney;
+		}
+
+		@Override
+		public void setMoney(double amount) {
+			this.money = amount;
+			this.sync();
+		}
+		
+		@Override
+		public void setBankMoney(double amount) {
+			this.bankMoney = amount;
+			this.sync();
+		}
+		@Override
+		public void setJob(Job job) {
+			this.job = job;
+			this.sync();
+		}
+		@Override
+		public void setJobLvl(int level) {
+			this.jobLevel = level;
+			this.sync();
+		}
+		@Override
+		public void setJobXP(int xp) {
+			this.jobXP = xp;
+			this.sync();
 		}
 
 	}
