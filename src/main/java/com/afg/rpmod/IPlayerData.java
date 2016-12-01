@@ -14,7 +14,15 @@ public interface IPlayerData {
 
 	@CapabilityInject(IPlayerData.class)
 	public static final Capability<IPlayerData> PLAYER_DATA = null;
-
+	
+	public double getMoney();
+	
+	public void setMoney(double amount);
+	
+	public double getBankMoney();
+	
+	public void setBankMoney(double amount);
+	
 	/**
 	 * Default NBTStorage required by Forge (Just refers to instance)
 	 *
@@ -36,16 +44,20 @@ public interface IPlayerData {
 	}
 
 	static class PlayerData implements IPlayerData, ICapabilityProvider, INBTSerializable<NBTTagCompound> {
-
+		private double money = 0;
+		private double bankMoney = 0;
 		@Override
 		public NBTTagCompound serializeNBT() {
 			NBTTagCompound tag = new NBTTagCompound();
+			tag.setDouble("money", this.money);
+			tag.setDouble("bankmoney", this.bankMoney);
 			return tag;
 		}
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt) {
-
+			this.money = nbt.getInteger("money");
+			this.bankMoney = nbt.getInteger("bankmoney");
 		}
 
 		@Override
@@ -60,6 +72,26 @@ public interface IPlayerData {
 			if (PLAYER_DATA != null && capability == PLAYER_DATA)
 				return PLAYER_DATA.cast(this);
 			return null;
+		}
+
+		@Override
+		public double getMoney() {
+			return this.money;
+		}
+
+		@Override
+		public void setMoney(double amount) {
+			this.money = amount;
+		}
+
+		@Override
+		public double getBankMoney() {
+			return this.bankMoney;
+		}
+
+		@Override
+		public void setBankMoney(double amount) {
+			this.bankMoney = amount;
 		}
 
 
