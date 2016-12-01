@@ -1,22 +1,11 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
-.classpath
-.project
+#Ignore Everything
+/*
 
-# idea
-out
-*.ipr
-*.iws
-*.iml
-.idea
+#Except for
+!.gitignore
+!build.gradle
+!src
+!Readme.md
 
-# gradle
-build
-.gradle
-
-# other
-eclipse
-run
+# ...even if they are in subdirectories
+!*/
