@@ -2,8 +2,6 @@ package com.afg.rpmod;
 
 import javax.annotation.Nullable;
 
-import com.afg.rpmod.network.UpdateClientPlayerData;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -13,6 +11,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
+
+import com.afg.rpmod.jobs.Job;
+import com.afg.rpmod.network.UpdateClientPlayerData;
 
 public interface IPlayerData {
 
@@ -26,6 +27,12 @@ public interface IPlayerData {
 	public double getBankMoney();
 
 	public void setBankMoney(double amount);
+
+	public Job getJob();
+
+	public int getJobLvl();
+
+	public int getJobXP();
 
 	/**
 	 * Default NBTStorage required by Forge (Just defers to instance)
@@ -48,8 +55,9 @@ public interface IPlayerData {
 	}
 
 	static class PlayerData implements IPlayerData, ICapabilityProvider, INBTSerializable<NBTTagCompound> {
-		private double money = 0;
-		private double bankMoney = 0;
+		private double money = 0.0, bankMoney = 0.0;
+		private Job job;
+		private int jobLevel = 1, jobXP = 0;
 		private EntityPlayer player;
 
 		public PlayerData(EntityPlayer player) {
@@ -60,6 +68,10 @@ public interface IPlayerData {
 			NBTTagCompound tag = new NBTTagCompound();
 			tag.setDouble("money", this.money);
 			tag.setDouble("bankmoney", this.bankMoney);
+			if(this.job != null)
+				tag.setInteger("job", this.job.getType().getID());
+			tag.setInteger("joblvl", this.jobLevel);
+			tag.setInteger("jobxp", this.jobXP);
 			return tag;
 		}
 
@@ -67,6 +79,11 @@ public interface IPlayerData {
 		public void deserializeNBT(NBTTagCompound nbt) {
 			this.money = nbt.getInteger("money");
 			this.bankMoney = nbt.getInteger("bankmoney");
+			int jobType = nbt.getInteger("job");
+			if(this.job == null || this.job.getType().getID() != jobType)
+				this.job = Job.createJob(jobType, this.player);
+			int jobRank = nbt.getInteger("jobxp");
+			int jobXP = nbt.getInteger("joblvl");
 			this.sync();
 		}
 
@@ -110,8 +127,18 @@ public interface IPlayerData {
 			this.bankMoney = amount;
 			this.sync();
 		}
-
-
+		@Override
+		public Job getJob() {
+			return this.job;
+		}
+		@Override
+		public int getJobLvl() {
+			return this.jobLevel;
+		}
+		@Override
+		public int getJobXP() {
+			return this.jobXP;
+		}
 
 	}
 }
