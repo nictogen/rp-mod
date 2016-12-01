@@ -1,11 +1,15 @@
 package com.afg.rpmod;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -14,8 +18,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
 
+import com.afg.rpmod.blocks.CityBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
@@ -39,6 +46,14 @@ public class RpMod
 	@SidedProxy(clientSide="com.afg.rpmod.proxy.ClientProxy", serverSide="com.afg.rpmod.proxy.CommonProxy")
 	public static CommonProxy proxy;	
 	
+	
+    @ObjectHolder(MODID)
+    public static class Blocks
+    {
+        public static final Block cityBlock = null;
+    }
+    
+	
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
@@ -51,12 +66,30 @@ public class RpMod
 	}
 
 	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event)
+	{
+		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"));
+		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
+	}
+
+	@SubscribeEvent
+	public static void registerItems(RegistryEvent.Register<Item> event) throws Exception
+	{
+		Block[] blocks = {
+				Blocks.cityBlock
+		};
+		for (Block block : blocks)
+			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+
+	}
+	
+	@SubscribeEvent
 	public static void attachCapabilities(AttachCapabilitiesEvent<Entity> e){
 		if(e.getObject() instanceof EntityPlayer){
 			e.addCapability(new ResourceLocation(RpMod.MODID, "playerdata"), new PlayerData((EntityPlayer) e.getObject()));
 		}
 	}
-
+	
 	@SubscribeEvent
 	public void cloneCapabilitiesEvent(PlayerEvent.Clone event)
 	{
