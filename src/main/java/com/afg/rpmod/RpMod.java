@@ -28,6 +28,7 @@ import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
 import com.afg.rpmod.network.UpdateClientPlayerData;
+import com.afg.rpmod.network.UpdateTileEntityServer;
 import com.afg.rpmod.proxy.CommonProxy;
 
 @Mod(
@@ -65,6 +66,8 @@ public class RpMod
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		networkWrapper.registerMessage(UpdateClientPlayerData.Handler.class, UpdateClientPlayerData.class,
 				netIndex++, Side.CLIENT);
+		networkWrapper.registerMessage(UpdateTileEntityServer.Handler.class, UpdateTileEntityServer.class,
+				netIndex++, Side.SERVER);
 	}
 
 	@SubscribeEvent
