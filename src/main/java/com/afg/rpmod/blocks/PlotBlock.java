@@ -21,6 +21,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.client.gui.PlotGui;
 
 public class PlotBlock extends Block implements ITileEntityProvider{
@@ -87,11 +88,11 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 
 		@Override
 		public void updateServerData(NBTTagCompound tag) {
-			if(tag.getInteger("range") != 0)
-				this.setRange(tag.getInteger("range"));
 			if(tag.getString("playername") != ""){
 				this.setPlayer(this.worldObj.getPlayerEntityByName(tag.getString("playername")));
 			}
+			if(tag.getInteger("range") != 0)
+				this.setRange(tag.getInteger("range"));
 			this.worldObj.notifyBlockUpdate(pos, this.worldObj.getBlockState(getPos()), this.worldObj.getBlockState(getPos()), 3);
 		}
 
@@ -99,6 +100,7 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		public void readFromNBT(NBTTagCompound tag) {
 			super.readFromNBT(tag);
 			this.range = tag.getInteger("range");
+			this.maxRange = tag.getInteger("maxrange");
 			this.playername = tag.getString("name");
 			UUID u = tag.getUniqueId("uuid");
 			if(u != null)
@@ -109,6 +111,7 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 			super.writeToNBT(tag);
 			tag.setInteger("range", this.range);
+			tag.setInteger("maxrange", this.maxRange);
 			if(this.uuid != null)
 				tag.setUniqueId("uuid", this.uuid);
 			tag.setString("name", this.playername);
@@ -123,6 +126,16 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		}
 
 		public void setRange(int range){
+			if(this.getPlayer() != null){
+				IPlayerData data = this.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
+				if(range > this.maxRange){
+					int amount = range - this.maxRange;
+					if(data.getMoney() > amount*100){
+						data.setMoney(data.getMoney() - amount*100);
+						this.maxRange += amount;
+					}
+				}
+			}
 			this.range = range;
 			if(this.range > this.maxRange)
 				this.range = this.maxRange;

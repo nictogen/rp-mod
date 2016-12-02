@@ -92,8 +92,10 @@ public class PlotGui extends GuiScreen {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		Minecraft.getMinecraft().renderEngine.bindTexture(location);
 		PlotBlockTE te = (PlotBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
-		if(te != null)
+		if(te != null){
 			this.owner = te.getName();
+			this.text2.setText("" + te.range);
+		}
 		int i = (this.width - 200) / 2;
 		int j = (this.height - 100) / 2;
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 100);
@@ -102,8 +104,7 @@ public class PlotGui extends GuiScreen {
 		this.text.drawTextBox();
 		this.text2.xPosition = this.width/2 - this.text2.width/2;
 		this.text2.yPosition = this.height/2 + 18;
-		if(te != null)
-			this.text2.setText("" + te.range);
+			
 		this.text2.drawTextBox();	
 		this.drawCenteredString(this.fontRendererObj, "Plot Block Settings", this.width/2, this.height/2 - 45, new Color(255,255,255).getRGB());
 		this.drawCenteredString(this.fontRendererObj, "Range", this.width/2, this.height/2 + 7, new Color(255,255,255).getRGB());
