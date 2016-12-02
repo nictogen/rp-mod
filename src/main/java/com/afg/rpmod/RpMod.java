@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.afg.rpmod.blocks.CityBlock;
+import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
@@ -51,6 +52,7 @@ public class RpMod
     public static class Blocks
     {
         public static final Block cityBlock = null;
+        public static final Block plotBlock = null;
     }
     
 	
@@ -68,15 +70,17 @@ public class RpMod
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event)
 	{
-		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"));
+		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"), new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"));
 		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
+		GameRegistry.registerTileEntity(PlotBlock.PlotBlockTE.class, RpMod.MODID + "_plotBlock");
 	}
 
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) throws Exception
 	{
 		Block[] blocks = {
-				Blocks.cityBlock
+				Blocks.cityBlock,
+				Blocks.plotBlock
 		};
 		for (Block block : blocks)
 			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
