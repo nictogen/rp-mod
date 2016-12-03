@@ -24,6 +24,7 @@ public class JobEventHandler {
 			} else {
 				data.setJob(Job.createJob(0, player));
 			}
+			data.increaseTotalPlaytime();
 		}
 	}
 }

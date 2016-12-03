@@ -40,6 +40,10 @@ public interface IPlayerData {
 	public int getJobXP();
 
 	public void setJobXP(int xp);
+	
+	public int getTotalPlaytime();
+	
+	public void increaseTotalPlaytime();
 
 	/**
 	 * Default NBTStorage required by Forge (Just defers to instance)
@@ -65,6 +69,7 @@ public interface IPlayerData {
 		private double money = 0.0, bankMoney = 0.0;
 		private Job job;
 		private int jobLevel = 1, jobXP = 0;
+		private int totalPlaytime = 0;
 		private EntityPlayer player;
 
 		public PlayerData(EntityPlayer player) {
@@ -79,6 +84,7 @@ public interface IPlayerData {
 				tag.setInteger("job", this.job.getType().getID());
 			tag.setInteger("joblvl", this.jobLevel);
 			tag.setInteger("jobxp", this.jobXP);
+			tag.setInteger("totalplaytime", this.totalPlaytime);
 			return tag;
 		}
 
@@ -90,8 +96,9 @@ public interface IPlayerData {
 			if(this.job == null || this.job.getType().getID() != jobType){
 				this.job = Job.createJob(jobType, this.player);
 			}
-			int jobRank = nbt.getInteger("jobxp");
-			int jobXP = nbt.getInteger("joblvl");
+			this.jobXP = nbt.getInteger("jobxp");
+			this.jobLevel = nbt.getInteger("joblvl");
+			this.totalPlaytime = nbt.getInteger("totalplaytime");
 		}
 
 		public void sync(){
@@ -157,11 +164,23 @@ public interface IPlayerData {
 			this.jobLevel = level;
 			this.sync();
 		}
+		
 		@Override
 		public void setJobXP(int xp) {
 			this.jobXP = xp;
 			this.sync();
 		}
+		
+		@Override
+		public int getTotalPlaytime() {
+			return this.totalPlaytime;
+		}
+		@Override
+		public void increaseTotalPlaytime() {
+			this.totalPlaytime++;
+		}
 
 	}
+
+	
 }

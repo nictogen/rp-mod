@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
 import com.afg.rpmod.blocks.CityBlock.CityBlockTE;
 import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
 import com.google.common.base.Predicate;
@@ -23,6 +24,11 @@ public class CityUtils {
 			return te instanceof PlotBlockTE; 
 		} };
 
+	private static Predicate<TileEntity> pApt = new Predicate<TileEntity>() { 
+		@Override public boolean apply(TileEntity te) { 
+			return te instanceof ApartmentBlockTE; 
+		} };		
+		
 	public static boolean checkPermission(EntityPlayer player, BlockPos pos){
 		List<TileEntity> allTEs = player.worldObj.loadedTileEntityList;
 		boolean cancel = false;
@@ -35,7 +41,6 @@ public class CityUtils {
 					cancel = true;
 			}
 		}
-
 		if(cancel == true)
 			for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 				PlotBlockTE te = (PlotBlockTE) t;
@@ -44,6 +49,17 @@ public class CityUtils {
 				if(diffX <= ((CityBlockTE) t).range && diffZ <= ((CityBlockTE) t).range){
 					if(te.getPlayer() == player)
 						cancel = false;
+				}
+			}
+		if(cancel == true)
+			for (TileEntity t : Collections2.filter(allTEs, pApt)) {
+				ApartmentBlockTE te = (ApartmentBlockTE) t;
+				int diffX = Math.abs(t.getPos().getX() - pos.getX());
+				int diffZ = Math.abs(t.getPos().getZ() - pos.getZ());
+				if(diffX <= ((ApartmentBlockTE) t).range && diffZ <= ((ApartmentBlockTE) t).range){
+					if(pos.getY() >= te.getPos().getY() && pos.getY() < te.getPos().getY() + te.height)
+						if(te.getPlayer() == player)
+							cancel = false;
 				}
 			}
 		return cancel;
@@ -88,6 +104,23 @@ public class CityUtils {
 				int diffZ = Math.abs(t.getPos().getZ() - city.getPos().getZ());
 				if(diffX - border < 0 && diffZ - border < 0)
 					return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean roomForApartment(World world, ApartmentBlockTE apt){
+		List<TileEntity> allTEs = world.loadedTileEntityList;
+		for (TileEntity t : Collections2.filter(allTEs, pApt)) {
+			ApartmentBlockTE te = (ApartmentBlockTE) t;
+			if(te != apt){
+				int border = te.range + apt.range;
+				int diffX = Math.abs(t.getPos().getX() - apt.getPos().getX());
+				int diffZ = Math.abs(t.getPos().getZ() - apt.getPos().getZ());
+				if(diffX - border < 0 && diffZ - border < 0)
+					if(apt.getPos().getY() + apt.height > te.getPos().getY())
+						return false;
 			}
 		}
 
@@ -159,4 +192,52 @@ public class CityUtils {
 		return true;
 	}
 
+	public static boolean canExpand(World world, ApartmentBlockTE expanding, int amount) {
+		List<TileEntity> allTEs = world.loadedTileEntityList;
+		PlotBlockTE plot = (PlotBlockTE) world.getTileEntity(expanding.getPlot());
+		if(plot == null)
+			return false;
+
+		int max = plot.range;
+
+		int diffX = plot.getPos().getX() - expanding.getPos().getX();
+		if(max > plot.range - Math.abs(diffX))
+			max = plot.range - Math.abs(diffX);
+		int diffZ = plot.getPos().getZ() - expanding.getPos().getZ();
+		if(max > plot.range - Math.abs(diffZ))
+			max = plot.range - Math.abs(diffZ);
+		if(expanding.range + amount > max)
+			return false;
+
+		for (TileEntity t : Collections2.filter(allTEs, pApt)) {
+			ApartmentBlockTE te = (ApartmentBlockTE) t;
+			if(te != expanding){
+				int border = te.range + expanding.range + amount;
+				diffX = Math.abs(t.getPos().getX() - expanding.getPos().getX());
+				diffZ = Math.abs(t.getPos().getZ() - expanding.getPos().getZ());
+				if(diffX - border < 0 && diffZ - border < 0)
+					if(expanding.getPos().getY() + expanding.height > te.getPos().getY())
+						return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean canExpandY(World world, ApartmentBlockTE expanding, int amount) {
+		List<TileEntity> allTEs = world.loadedTileEntityList;
+		for (TileEntity t : Collections2.filter(allTEs, pApt)) {
+			ApartmentBlockTE te = (ApartmentBlockTE) t;
+			if(te != expanding){
+				int border = te.range + expanding.range;
+				int diffX = Math.abs(t.getPos().getX() - expanding.getPos().getX());
+				int diffZ = Math.abs(t.getPos().getZ() - expanding.getPos().getZ());
+				if(diffX - border < 0 && diffZ - border < 0)
+					if(expanding.getPos().getY() + expanding.height + amount > te.getPos().getY())
+						return false;
+			}
+		}
+
+		return true;
+	}
 }
