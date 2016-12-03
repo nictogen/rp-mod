@@ -18,11 +18,14 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import com.afg.rpmod.blocks.CityBlock.CityBlockTE;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.client.gui.PlotGui;
+import com.afg.rpmod.utils.CityUtils;
 
 public class PlotBlock extends Block implements ITileEntityProvider{
 
@@ -52,8 +55,16 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
 	{
-		if(placer instanceof EntityPlayer)
+		if(placer instanceof EntityPlayer){
 			this.getTE(worldIn, pos).setPlayer((EntityPlayer) placer);
+			CityBlockTE city = CityUtils.closestCity(worldIn, pos);
+			if(city == null || Math.sqrt(Math.pow((city.getPos().getX() - pos.getX()), 2) + Math.pow((city.getPos().getZ() - pos.getZ()), 2)) > 100)
+				worldIn.destroyBlock(pos, true);
+			else
+				this.getTE(worldIn, pos).city = city.getPos();
+			if(!CityUtils.roomForPlot(worldIn, this.getTE(worldIn, pos)))
+				worldIn.destroyBlock(pos, true);
+		}
 	}
 
 	@Override
@@ -62,12 +73,13 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		world.removeTileEntity(pos);
 	}
 
-	public static class PlotBlockTE extends TileEntity implements IUpdatesFromClient{
+	public static class PlotBlockTE extends TileEntity implements IUpdatesFromClient, ITickable{
 
-		public int range = 10;
+		public int range = 1;
 		public int maxRange = 10;
 		private UUID uuid;
 		private String playername;
+		private BlockPos city;
 
 		@Override
 		public NBTTagCompound getUpdateTag() {
@@ -102,6 +114,8 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 			this.range = tag.getInteger("range");
 			this.maxRange = tag.getInteger("maxrange");
 			this.playername = tag.getString("name");
+			BlockPos city = new BlockPos(tag.getInteger("cityX"), tag.getInteger("cityY"), tag.getInteger("cityZ"));
+			this.setCity(city);
 			UUID u = tag.getUniqueId("uuid");
 			if(u != null)
 				this.uuid = u;
@@ -115,6 +129,11 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 			if(this.uuid != null)
 				tag.setUniqueId("uuid", this.uuid);
 			tag.setString("name", this.playername);
+			if(this.city != null){
+				tag.setInteger("cityX", this.getCity().getX());
+				tag.setInteger("cityY", this.getCity().getY());
+				tag.setInteger("cityZ", this.getCity().getZ());
+			}
 			return tag;
 		}
 
@@ -126,6 +145,8 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		}
 
 		public void setRange(int range){
+			if(range > this.range && !CityUtils.canExpand(worldObj, this, range - this.range))
+				return;
 			if(this.getPlayer() != null){
 				IPlayerData data = this.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
 				if(range > this.maxRange){
@@ -151,6 +172,20 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 			if(this.uuid != null)
 				return this.worldObj.getPlayerEntityByUUID(this.uuid);
 			return null;
+		}
+
+		@Override
+		public void update() {
+			if(this.getCity() == null || !(this.worldObj.getBlockState(this.getCity()).getBlock() instanceof CityBlock))
+				this.worldObj.destroyBlock(getPos(), true);
+		}
+
+		public BlockPos getCity() {
+			return city;
+		}
+
+		public void setCity(BlockPos city) {
+			this.city = city;
 		}
 	}
 }

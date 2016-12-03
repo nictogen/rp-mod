@@ -41,7 +41,7 @@ public class CityBlock extends Block implements ITileEntityProvider{
 		world.removeTileEntity(pos);
 	}
 
-	public static class CityBlockTE extends TileEntity implements ITickable{
+	public static class CityBlockTE extends TileEntity{
 
 		@Override
 		public NBTTagCompound getUpdateTag() {
@@ -70,10 +70,6 @@ public class CityBlock extends Block implements ITileEntityProvider{
 			return tag;
 		}
 
-
-		@Override
-		public void update() {
-		}
 
 	}
 
