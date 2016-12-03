@@ -26,6 +26,7 @@ public class LandGui extends GuiScreen {
 	protected ResourceLocation location = new ResourceLocation(RpMod.MODID, "textures/gui/background.png");
 	protected BlockPos pos;
 	protected String name;
+	
 	public LandGui(BlockPos pos){
 		this.pos = pos;
 	}

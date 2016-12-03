@@ -26,7 +26,16 @@ public class CityUtils {
 	public static boolean checkPermission(EntityPlayer player, BlockPos pos){
 		List<TileEntity> allTEs = player.worldObj.loadedTileEntityList;
 		boolean cancel = false;
-		cancel = inCity(player.worldObj, pos);
+		for (TileEntity t : Collections2.filter(allTEs, pCity)) {
+			CityBlockTE te = (CityBlockTE) t;
+			int diffX = Math.abs(t.getPos().getX() - pos.getX());
+			int diffZ = Math.abs(t.getPos().getZ() - pos.getZ());
+			if(diffX <= te.range && diffZ <= te.range){
+				if(te.getPlayer() != player)
+					cancel = true;
+			}
+		}
+
 		if(cancel == true)
 			for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 				PlotBlockTE te = (PlotBlockTE) t;

@@ -19,7 +19,7 @@ public class CityEventHandler {
 	
 	@SubscribeEvent
 	public void checkPlace(BlockEvent.PlaceEvent e){
-//		e.setCanceled(CityUtils.checkPermission(e.getPlayer(), e.getPos()));
+		e.setCanceled(CityUtils.checkPermission(e.getPlayer(), e.getPos()));
 	}
 	
 	@SubscribeEvent

@@ -22,7 +22,6 @@ public class InfoOverlay extends Gui {
 			for(int i = 0; i < info.length; i++)
 				this.drawString(Minecraft.getMinecraft().fontRendererObj, info[i], 0, i*10, 0x00FF00);
 		}
-
 	}
 
 	@SubscribeEvent
