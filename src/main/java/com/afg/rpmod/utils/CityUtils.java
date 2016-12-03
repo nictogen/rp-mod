@@ -13,7 +13,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 public class CityUtils {
-	//TODO change all 100's to city's range
 	private static Predicate<TileEntity> pCity = new Predicate<TileEntity>() { 
 		@Override public boolean apply(TileEntity te) { 
 			return te instanceof CityBlockTE; 
@@ -23,8 +22,7 @@ public class CityUtils {
 		@Override public boolean apply(TileEntity te) { 
 			return te instanceof PlotBlockTE; 
 		} };
-	
-	//TODO don't check y
+
 	public static boolean checkPermission(EntityPlayer player, BlockPos pos){
 		List<TileEntity> allTEs = player.worldObj.loadedTileEntityList;
 		boolean cancel = false;
@@ -32,25 +30,29 @@ public class CityUtils {
 		if(cancel == true)
 			for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 				PlotBlockTE te = (PlotBlockTE) t;
-				if(te.getPos().getDistance(pos.getX(), pos.getY(), pos.getZ()) < te.range && te.getPlayer() == player){
-					cancel = false;
-					}
+				int diffX = Math.abs(t.getPos().getX() - pos.getX());
+				int diffZ = Math.abs(t.getPos().getZ() - pos.getZ());
+				if(diffX <= ((CityBlockTE) t).range && diffZ <= ((CityBlockTE) t).range){
+					if(te.getPlayer() == player)
+						cancel = false;
 				}
+			}
 		return cancel;
 	}
-	
-	//TODO don't check Y
+
 	public static boolean inCity(World world, BlockPos pos){
 		boolean inCity = false;
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		for (TileEntity t : Collections2.filter(allTEs, pCity)) {
-			if(t.getPos().getDistance(pos.getX(), pos.getY(), pos.getZ()) < 100){
+			int diffX = Math.abs(t.getPos().getX() - pos.getX());
+			int diffZ = Math.abs(t.getPos().getZ() - pos.getZ());
+			if(diffX <= ((CityBlockTE) t).range && diffZ <= ((CityBlockTE) t).range){
 				inCity = true;
-				}
 			}
+		}
 		return inCity;
 	}
-	
+
 	public static boolean roomForPlot(World world, PlotBlockTE plot){
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
@@ -66,7 +68,23 @@ public class CityUtils {
 
 		return true;
 	}
-	
+
+	public static boolean roomForCity(World world, CityBlockTE city){
+		List<TileEntity> allTEs = world.loadedTileEntityList;
+		for (TileEntity t : Collections2.filter(allTEs, pCity)) {
+			CityBlockTE te = (CityBlockTE) t;
+			if(te != city){
+				int border = te.range + city.range;
+				int diffX = Math.abs(t.getPos().getX() - city.getPos().getX());
+				int diffZ = Math.abs(t.getPos().getZ() - city.getPos().getZ());
+				if(diffX - border < 0 && diffZ - border < 0)
+					return false;
+			}
+		}
+
+		return true;
+	}
+
 	public static CityBlockTE closestCity(World world, BlockPos pos){
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		CityBlockTE closest = null;
@@ -89,23 +107,23 @@ public class CityUtils {
 		if(city == null)
 			return false;
 
-		int max = 100;
+		int max = city.range;
 
 		int diffX = city.getPos().getX() - expanding.getPos().getX();
-		if(max > 100 - Math.abs(diffX))
-			max = 100 - Math.abs(diffX);
+		if(max > city.range - Math.abs(diffX))
+			max = city.range - Math.abs(diffX);
 		int diffZ = city.getPos().getZ() - expanding.getPos().getZ();
-		if(max > 100 - Math.abs(diffZ))
-			max = 100 - Math.abs(diffZ);
+		if(max > city.range - Math.abs(diffZ))
+			max = city.range - Math.abs(diffZ);
 		if(expanding.range + amount > max)
 			return false;
-		
+
 		for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 			PlotBlockTE te = (PlotBlockTE) t;
 			if(te != expanding){
 				int border = te.range + expanding.range + amount;
-				diffX = t.getPos().getX() - expanding.getPos().getX();
-				diffZ = t.getPos().getZ() - expanding.getPos().getZ();
+				diffX = Math.abs(t.getPos().getX() - expanding.getPos().getX());
+				diffZ = Math.abs(t.getPos().getZ() - expanding.getPos().getZ());
 				if(diffX - border < 0 && diffZ - border < 0)
 					return false;
 			}
@@ -113,5 +131,23 @@ public class CityUtils {
 
 		return true;
 	}
-	
+
+	public static boolean canExpand(World worldObj, CityBlockTE expanding, int amount) {
+
+		List<TileEntity> allTEs = worldObj.loadedTileEntityList;
+
+		for (TileEntity t : Collections2.filter(allTEs, pCity)) {
+			CityBlockTE te = (CityBlockTE) t;
+			if(te != expanding){
+				int border = te.range + expanding.range + amount;
+				int diffX = Math.abs(t.getPos().getX() - expanding.getPos().getX());
+				int diffZ = Math.abs(t.getPos().getZ() - expanding.getPos().getZ());
+				if(diffX - border < 0 && diffZ - border < 0)
+					return false;
+			}
+		}
+
+		return true;
+	}
+
 }

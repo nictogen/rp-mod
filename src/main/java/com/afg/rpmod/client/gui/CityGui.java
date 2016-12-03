@@ -4,21 +4,23 @@ import java.io.IOException;
 
 import org.lwjgl.input.Keyboard;
 
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
-import com.afg.rpmod.network.UpdateTileEntityServer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-public class PlotGui extends LandGui {
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.blocks.CityBlock.CityBlockTE;
+import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
+import com.afg.rpmod.network.UpdateTileEntityServer;
 
-	public PlotGui(BlockPos pos) {
+public class CityGui extends LandGui {
+
+	public CityGui(BlockPos pos) {
 		super(pos);
-		this.name = "Plot Block Settings";
+		this.name = "City Block Settings";
 	}
 
 	@Override
@@ -26,16 +28,16 @@ public class PlotGui extends LandGui {
 	{
 		super.updateScreen();
 		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
-		if(te instanceof PlotBlockTE){
-			this.owner = ((PlotBlockTE) te).getName();
-			this.text2.setText("" + ((PlotBlockTE) te).range);
+		if(te instanceof CityBlockTE){
+			this.owner = ((CityBlockTE) te).getName();
+			this.text2.setText("" + ((CityBlockTE) te).range);
 		}
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		PlotBlockTE te = (PlotBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		CityBlockTE te = (CityBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
 		if(te != null){
 			NBTTagCompound tag = new NBTTagCompound();
 			int amount = 1;
@@ -57,4 +59,5 @@ public class PlotGui extends LandGui {
 			}
 		}
 	}
+
 }
