@@ -41,7 +41,8 @@ public class CityBlock extends Block implements ITileEntityProvider{
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		if(playerIn.worldObj.isRemote){
-			Minecraft.getMinecraft().displayGuiScreen(new CityGui(pos));
+			if(this.getTE(worldIn, pos).getPlayer() == playerIn)
+				Minecraft.getMinecraft().displayGuiScreen(new CityGui(pos));
 		}
 		return false;
 	}
@@ -155,6 +156,11 @@ public class CityBlock extends Block implements ITileEntityProvider{
 			if(this.uuid != null)
 				return this.worldObj.getPlayerEntityByUUID(this.uuid);
 			return null;
+		}
+
+		@Override
+		public boolean isApprovedPlayer(EntityPlayer player) {
+			return this.getPlayer() == player;
 		}
 
 	}

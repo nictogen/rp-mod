@@ -46,9 +46,6 @@ public class LandGui extends GuiScreen {
 	protected void keyTyped(char par1, int par2) throws IOException
 	{
 		super.keyTyped(par1, par2);
-		if(par2 == Keyboard.KEY_RETURN){
-			Minecraft.getMinecraft().displayGuiScreen((GuiScreen)null);
-		}
 		this.text.textboxKeyTyped(par1, par2);
 	}
 

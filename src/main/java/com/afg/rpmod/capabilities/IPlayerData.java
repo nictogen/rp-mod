@@ -178,6 +178,7 @@ public interface IPlayerData {
 		@Override
 		public void increaseTotalPlaytime() {
 			this.totalPlaytime++;
+			this.sync();
 		}
 
 	}

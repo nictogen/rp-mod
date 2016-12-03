@@ -47,7 +47,8 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		if(playerIn.worldObj.isRemote){
-			Minecraft.getMinecraft().displayGuiScreen(new PlotGui(pos));
+			if(this.getTE(worldIn, pos).getPlayer() == playerIn)
+				Minecraft.getMinecraft().displayGuiScreen(new PlotGui(pos));
 		}
 		return false;
 	}
@@ -58,7 +59,7 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		if(placer instanceof EntityPlayer){
 			this.getTE(worldIn, pos).setPlayer((EntityPlayer) placer);
 			CityBlockTE city = CityUtils.closestCity(worldIn, pos);
-			if(city == null || Math.sqrt(Math.pow((city.getPos().getX() - pos.getX()), 2) + Math.pow((city.getPos().getZ() - pos.getZ()), 2)) > 100)
+			if(city == null || Math.sqrt(Math.pow((city.getPos().getX() - pos.getX()), 2) + Math.pow((city.getPos().getZ() - pos.getZ()), 2)) > city.range)
 				worldIn.destroyBlock(pos, true);
 			else
 				this.getTE(worldIn, pos).city = city.getPos();
@@ -186,6 +187,11 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 
 		public void setCity(BlockPos city) {
 			this.city = city;
+		}
+
+		@Override
+		public boolean isApprovedPlayer(EntityPlayer player) {
+			return this.getPlayer() == player;
 		}
 	}
 }

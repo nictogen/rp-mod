@@ -18,7 +18,7 @@ public class InfoOverlay extends Gui {
 		IPlayerData data = Minecraft.getMinecraft().thePlayer.getCapability(IPlayerData.PLAYER_DATA, null);
 		FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
 		if(data != null && data.getJob() != null){
-			String[] info = {"Money: $" + data.getMoney(), "Bank Money: $" + data.getBankMoney(), "Job: " + data.getJob().getName(), "Level: " + data.getJobLvl(), "XP: " + data.getJobXP()};
+			String[] info = {"Money: $" + data.getMoney(), "Bank Money: $" + data.getBankMoney(), "Job: " + data.getJob().getName(), "Salary: $" + data.getJob().getIncome(), "Level: " + data.getJobLvl(), "XP: " + data.getJobXP()};
 			for(int i = 0; i < info.length; i++)
 				this.drawString(Minecraft.getMinecraft().fontRendererObj, info[i], 0, i*10, 0x00FF00);
 		}

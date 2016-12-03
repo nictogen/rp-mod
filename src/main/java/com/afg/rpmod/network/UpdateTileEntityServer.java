@@ -12,7 +12,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.afg.rpmod.blocks.IUpdatesFromClient;
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
 
 public class UpdateTileEntityServer implements IMessage{
 	private NBTTagCompound tag;
@@ -57,7 +56,7 @@ public class UpdateTileEntityServer implements IMessage{
 		@Override
 		public void run() {
 			TileEntity te = ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.pos);
-			if(te != null && te instanceof IUpdatesFromClient)
+			if(te != null && te instanceof IUpdatesFromClient && ((IUpdatesFromClient) te).isApprovedPlayer(ctx.getServerHandler().playerEntity))
 				((IUpdatesFromClient) te).updateServerData(message.tag);
 		}
 

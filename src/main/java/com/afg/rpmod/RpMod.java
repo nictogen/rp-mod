@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
 
+import com.afg.rpmod.blocks.ApartmentBlock;
 import com.afg.rpmod.blocks.CityBlock;
 import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
@@ -54,6 +55,7 @@ public class RpMod
     {
         public static final Block cityBlock = null;
         public static final Block plotBlock = null;
+        public static final Block apartmentBlock = null;
     }
     
 	
@@ -73,9 +75,10 @@ public class RpMod
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event)
 	{
-		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"), new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"));
+		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"), new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"), new ApartmentBlock().setRegistryName(RpMod.MODID, "apartmentBlock"));
 		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
 		GameRegistry.registerTileEntity(PlotBlock.PlotBlockTE.class, RpMod.MODID + "_plotBlock");
+		GameRegistry.registerTileEntity(ApartmentBlock.ApartmentBlockTE.class, RpMod.MODID + "_apartmentBlock");
 	}
 
 	@SubscribeEvent
@@ -83,11 +86,12 @@ public class RpMod
 	{
 		Block[] blocks = {
 				Blocks.cityBlock,
-				Blocks.plotBlock
+				Blocks.plotBlock,
+				Blocks.apartmentBlock
 		};
-		for (Block block : blocks)
+		for (Block block : blocks){
 			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-
+		}
 	}
 	
 	@SubscribeEvent

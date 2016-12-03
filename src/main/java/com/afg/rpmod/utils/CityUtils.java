@@ -28,7 +28,7 @@ public class CityUtils {
 		@Override public boolean apply(TileEntity te) { 
 			return te instanceof ApartmentBlockTE; 
 		} };		
-		
+		//TODO check nearby depending plots/apartments when decreasing range
 	public static boolean checkPermission(EntityPlayer player, BlockPos pos){
 		List<TileEntity> allTEs = player.worldObj.loadedTileEntityList;
 		boolean cancel = false;
@@ -46,7 +46,7 @@ public class CityUtils {
 				PlotBlockTE te = (PlotBlockTE) t;
 				int diffX = Math.abs(t.getPos().getX() - pos.getX());
 				int diffZ = Math.abs(t.getPos().getZ() - pos.getZ());
-				if(diffX <= ((CityBlockTE) t).range && diffZ <= ((CityBlockTE) t).range){
+				if(diffX <= ((PlotBlockTE) t).range && diffZ <= ((PlotBlockTE) t).range){
 					if(te.getPlayer() == player)
 						cancel = false;
 				}
@@ -138,6 +138,22 @@ public class CityUtils {
 				double closestDist = Math.sqrt(Math.pow((closest.getPos().getX() - pos.getX()), 2) + Math.pow((closest.getPos().getZ() - pos.getZ()), 2));
 				if(dist < closestDist)
 					closest = (CityBlockTE) t;
+			}
+		}
+		return closest;
+	}
+	
+	public static PlotBlockTE closestPlot(World world, BlockPos pos){
+		List<TileEntity> allTEs = world.loadedTileEntityList;
+		PlotBlockTE closest = null;
+		for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
+			double dist = Math.sqrt(Math.pow((t.getPos().getX() - pos.getX()), 2) + Math.pow((t.getPos().getZ() - pos.getZ()), 2));
+			if(closest == null){
+				closest = (PlotBlockTE) t;
+			} else {
+				double closestDist = Math.sqrt(Math.pow((closest.getPos().getX() - pos.getX()), 2) + Math.pow((closest.getPos().getZ() - pos.getZ()), 2));
+				if(dist < closestDist)
+					closest = (PlotBlockTE) t;
 			}
 		}
 		return closest;
