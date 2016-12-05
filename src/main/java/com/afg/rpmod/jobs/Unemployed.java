@@ -24,11 +24,6 @@ public class Unemployed extends Job {
 	}
 
 	@Override
-	public void onUpdate() {
-		
-	}
-
-	@Override
 	public String getName() {
 		return "Unemployed";
 	}

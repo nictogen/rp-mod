@@ -108,7 +108,7 @@ public class RpMod
 	public void postInit(FMLPostInitializationEvent event){
 		//Replace crafting recipes with custom ones
 		List<Item> changedRecipes = new ArrayList<Item>();
-		changedRecipes.add(net.minecraft.init.Items.ARROW);
+//		changedRecipes.add(net.minecraft.init.Items.ARROW);
 		
 		
 		List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();

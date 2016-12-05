@@ -2,6 +2,8 @@ package com.afg.rpmod.handlers;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -30,6 +32,23 @@ public class JobEventHandler {
 		}
 	}
 
+	@SubscribeEvent
+	public void onKillEntity(LivingDeathEvent e){
+		if(e.getSource().getEntity() instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer) e.getSource().getEntity();
+			IPlayerData data = player.getCapability(IPlayerData.PLAYER_DATA, null);
+			data.getJob().onKill(e);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onLivingDropItems(LivingDropsEvent e){
+		if(e.getSource().getEntity() instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer) e.getSource().getEntity();
+			IPlayerData data = player.getCapability(IPlayerData.PLAYER_DATA, null);
+			data.getJob().onLivingDrops(e);
+		}
+	}
 	@SubscribeEvent
 	public void onCustomCraft(CraftingEvent e){
 		IPlayerData data = e.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);

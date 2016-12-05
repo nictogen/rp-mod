@@ -1,7 +1,11 @@
 package com.afg.rpmod.jobs;
 
+import com.afg.rpmod.capabilities.IPlayerData;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 public abstract class Job {
 	private EntityPlayer player;
@@ -9,7 +13,7 @@ public abstract class Job {
 		this.player = player;
 	}
 	//List of all the jobs, for translating to NBT to save and send through packets
-	private static JobType[] jobTypeList = {JobType.UNEMPLOYED};
+	private static JobType[] jobTypeList = {JobType.UNEMPLOYED, JobType.HUNTER};
 
 	/**
 	 * Bridge method to create a new job instance
@@ -24,14 +28,21 @@ public abstract class Job {
 
 	public abstract double getIncome();
 
-	public abstract void onUpdate();
-
 	public abstract String getName();
 	
 	public abstract Item[] getExclusiveCraftingRecipes();
 	
+	//Logic methods to do custom abilities/give xp
+	public void onUpdate(){}
+	public void onKill(LivingDeathEvent e){}
+	public void onLivingDrops(LivingDropsEvent e){}
+	
 	public EntityPlayer getPlayer(){
 		return this.player;
+	}
+	
+	protected IPlayerData getData(){
+		return player.getCapability(IPlayerData.PLAYER_DATA, null);
 	}
 
 	public abstract JobType getType();
@@ -41,7 +52,8 @@ public abstract class Job {
 	//Enum of jobs that serve as a factory. Probs overkill but w/e
 	public static enum JobType {
 		//Declaration of Types
-		UNEMPLOYED(0, Unemployed.class);
+		UNEMPLOYED(0, Unemployed.class),
+		HUNTER(1, Hunter.class);
 		//Variables for JobType
 		private int id;
 		private Class<? extends Job> job;
