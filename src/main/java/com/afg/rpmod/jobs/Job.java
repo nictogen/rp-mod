@@ -1,9 +1,7 @@
 package com.afg.rpmod.jobs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 public abstract class Job {
 	private EntityPlayer player;
@@ -29,6 +27,8 @@ public abstract class Job {
 	public abstract void onUpdate();
 
 	public abstract String getName();
+	
+	public abstract Item[] getExclusiveCraftingRecipes();
 	
 	public EntityPlayer getPlayer(){
 		return this.player;

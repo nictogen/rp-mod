@@ -3,6 +3,8 @@ package com.afg.rpmod.jobs;
 import com.afg.rpmod.capabilities.IPlayerData;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 
 public class Unemployed extends Job {
 
@@ -29,6 +31,11 @@ public class Unemployed extends Job {
 	@Override
 	public String getName() {
 		return "Unemployed";
+	}
+
+	@Override
+	public Item[] getExclusiveCraftingRecipes() {
+		return new Item[]{};
 	}
 
 }

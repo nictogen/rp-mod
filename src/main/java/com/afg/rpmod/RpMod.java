@@ -1,6 +1,8 @@
 package com.afg.rpmod;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -12,6 +14,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemDoor;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -24,6 +30,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -31,6 +38,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import com.afg.rpmod.blocks.ApartmentBlock;
 import com.afg.rpmod.blocks.ApartmentDoor;
@@ -39,6 +48,10 @@ import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
+import com.afg.rpmod.jobs.crafting.CancelableShapedOreRecipe;
+import com.afg.rpmod.jobs.crafting.CancelableShapedRecipe;
+import com.afg.rpmod.jobs.crafting.CancelableShapelessOreRecipe;
+import com.afg.rpmod.jobs.crafting.CancelableShapelessRecipe;
 import com.afg.rpmod.network.UpdateClientPlayerData;
 import com.afg.rpmod.network.UpdateTileEntityServer;
 import com.afg.rpmod.proxy.CommonProxy;
@@ -89,6 +102,35 @@ public class RpMod
 				netIndex++, Side.CLIENT);
 		networkWrapper.registerMessage(UpdateTileEntityServer.Handler.class, UpdateTileEntityServer.class,
 				netIndex++, Side.SERVER);
+	}
+	
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event){
+		//Replace crafting recipes with custom ones
+		List<Item> changedRecipes = new ArrayList<Item>();
+		changedRecipes.add(net.minecraft.init.Items.ARROW);
+		
+		
+		List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();
+		//Create duplicate to avoid concurrent modification
+		List<IRecipe> vanillaRecipes = new ArrayList<IRecipe>();
+		vanillaRecipes.addAll(recipeList);
+		
+ 		for(IRecipe recipe : vanillaRecipes){
+			if(recipe.getRecipeOutput() != null && recipe.getRecipeOutput().getItem() != null && changedRecipes.contains(recipe.getRecipeOutput().getItem())){
+				recipeList.remove(recipe);
+				if(recipe instanceof ShapelessRecipes){
+					recipeList.add(new CancelableShapelessRecipe(recipe.getRecipeOutput(), ((ShapelessRecipes) recipe).recipeItems));
+				} else if (recipe instanceof ShapedRecipes){
+					ShapedRecipes sRecipe = (ShapedRecipes) recipe;
+					recipeList.add(new CancelableShapedRecipe(sRecipe.recipeWidth, sRecipe.recipeHeight, sRecipe.recipeItems, sRecipe.getRecipeOutput()));
+				} else if (recipe instanceof ShapedOreRecipe){
+					recipeList.add(new CancelableShapedOreRecipe((ShapedOreRecipe) recipe));
+				} else if (recipe instanceof ShapelessOreRecipe){
+					recipeList.add(new CancelableShapelessOreRecipe((ShapelessOreRecipe) recipe));
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent
