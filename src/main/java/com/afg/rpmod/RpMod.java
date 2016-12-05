@@ -1,12 +1,18 @@
 package com.afg.rpmod;
 
+import java.lang.reflect.Field;
+
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -21,6 +27,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.afg.rpmod.blocks.ApartmentBlock;
 import com.afg.rpmod.blocks.CityBlock;
@@ -91,6 +98,17 @@ public class RpMod
 		};
 		for (Block block : blocks){
 			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+		}
+	}
+	
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public static void registerModels(ModelRegistryEvent event) throws Exception
+	{
+		for (Field f : Blocks.class.getDeclaredFields()){
+			Item item = Item.getItemFromBlock((Block) f.get(null));
+			ModelResourceLocation loc = new ModelResourceLocation(item.getRegistryName(), "inventory");
+			ModelLoader.setCustomModelResourceLocation(item, 0, loc);
 		}
 	}
 	

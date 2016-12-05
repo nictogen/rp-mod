@@ -33,6 +33,7 @@ public class PlotBlock extends Block implements ITileEntityProvider{
 		super(Material.ANVIL);
 		this.isBlockContainer = true;
 		this.setHardness(0.5f);
+		this.setUnlocalizedName("Plot Block");
 	}
 
 	@Override
