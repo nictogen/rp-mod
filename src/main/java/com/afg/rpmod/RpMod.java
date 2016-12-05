@@ -3,12 +3,15 @@ package com.afg.rpmod;
 import java.lang.reflect.Field;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemDoor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -30,6 +33,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.afg.rpmod.blocks.ApartmentBlock;
+import com.afg.rpmod.blocks.ApartmentDoor;
 import com.afg.rpmod.blocks.CityBlock;
 import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
@@ -63,9 +67,17 @@ public class RpMod
         public static final Block cityBlock = null;
         public static final Block plotBlock = null;
         public static final Block apartmentBlock = null;
+        public static final Block apartmentDoor = null;
     }
     
-	
+    @ObjectHolder(MODID)
+    public static class Items
+    {
+        public static final Item cityBlock = null;
+        public static final Item plotBlock = null;
+        public static final Item apartmentBlock = null;
+        public static final Item apartmentDoor = null;
+    }
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
@@ -82,10 +94,14 @@ public class RpMod
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event)
 	{
-		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"), new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"), new ApartmentBlock().setRegistryName(RpMod.MODID, "apartmentBlock"));
+		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"), 
+				new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"), 
+				new ApartmentBlock().setRegistryName(RpMod.MODID, "apartmentBlock"),
+				new ApartmentDoor().setRegistryName(RpMod.MODID, "apartmentDoor"));
 		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
 		GameRegistry.registerTileEntity(PlotBlock.PlotBlockTE.class, RpMod.MODID + "_plotBlock");
 		GameRegistry.registerTileEntity(ApartmentBlock.ApartmentBlockTE.class, RpMod.MODID + "_apartmentBlock");
+		GameRegistry.registerTileEntity(ApartmentDoor.ApartmentDoorTE.class, RpMod.MODID + "_apartmentDoor");
 	}
 
 	@SubscribeEvent
@@ -99,17 +115,22 @@ public class RpMod
 		for (Block block : blocks){
 			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 		}
+		event.getRegistry().register(new ItemDoor(Blocks.apartmentDoor).setRegistryName(Blocks.apartmentDoor.getRegistryName()));
 	}
 	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public static void registerModels(ModelRegistryEvent event) throws Exception
 	{
-		for (Field f : Blocks.class.getDeclaredFields()){
-			Item item = Item.getItemFromBlock((Block) f.get(null));
+		for (Field f : Items.class.getDeclaredFields()){
+			Item item = (Item) f.get(null);
 			ModelResourceLocation loc = new ModelResourceLocation(item.getRegistryName(), "inventory");
 			ModelLoader.setCustomModelResourceLocation(item, 0, loc);
+			
 		}
+		ModelLoader.setCustomStateMapper(
+			   	Blocks.apartmentDoor, (new StateMap.Builder()).ignore(new IProperty[] {BlockDoor.POWERED}).build()
+			);
 	}
 	
 	@SubscribeEvent

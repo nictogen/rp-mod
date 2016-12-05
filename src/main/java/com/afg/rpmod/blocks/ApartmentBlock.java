@@ -53,7 +53,7 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 		if(playerIn.worldObj.isRemote ){
 			if(worldIn.getTileEntity(this.getTE(worldIn, pos).getPlot()) instanceof PlotBlockTE && ((PlotBlockTE) worldIn.getTileEntity(this.getTE(worldIn, pos).getPlot())).getPlayer() == playerIn){
 				Minecraft.getMinecraft().displayGuiScreen(new LandlordGui(pos));
-			} else if(this.getTE(worldIn, pos).playername == EMPTY){
+			} else if(this.getTE(worldIn, pos).playername.contains(EMPTY)){
 				Minecraft.getMinecraft().displayGuiScreen(new PurchaseGui(pos));
 			} else if(this.getTE(worldIn, pos).getPlayer() == playerIn){
 				Minecraft.getMinecraft().displayGuiScreen(new ApartmentInfoGui(pos));
@@ -95,7 +95,8 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 		private String name;
 		private BlockPos plot;
 		private boolean renting = false;
-
+		
+		
 		@Override
 		public NBTTagCompound getUpdateTag() {
 			return writeToNBT(new NBTTagCompound());

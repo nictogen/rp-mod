@@ -41,6 +41,7 @@ public class CityUtils {
 					cancel = true;
 			}
 		}
+		System.out.println(cancel);
 		if(cancel == true)
 			for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 				PlotBlockTE te = (PlotBlockTE) t;
@@ -159,6 +160,25 @@ public class CityUtils {
 		return closest;
 	}
 
+	public static ApartmentBlockTE apartmentInside(World world, BlockPos pos){
+		List<TileEntity> allTEs = world.loadedTileEntityList;
+		for (TileEntity t : Collections2.filter(allTEs, pApt)) {
+			ApartmentBlockTE te = (ApartmentBlockTE) t;
+			int minX = te.getPos().getX() - te.range;
+			int maxX = te.getPos().getX() + te.range;
+			int minY = te.getPos().getY();
+			int maxY = te.getPos().getY() + te.height;
+			int minZ = te.getPos().getZ() - te.range;
+			int maxZ = te.getPos().getZ() + te.range;
+			
+			if(pos.getX() >= minX && pos.getX() <= maxX)
+				if(pos.getY() >= minY && pos.getY() <= maxY)
+					if(pos.getZ() >= minZ && pos.getZ() <= maxZ)
+						return te;
+		}
+
+		return null;
+	}
 	public static boolean canExpand(World world, PlotBlockTE expanding, int amount){
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		CityBlockTE city = (CityBlockTE) world.getTileEntity(expanding.getCity());
