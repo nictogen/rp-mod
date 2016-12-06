@@ -10,4 +10,5 @@ public class ClientProxy extends CommonProxy {
 		super.registerEventHandlers();
 		MinecraftForge.EVENT_BUS.register(new InfoOverlay());
 	}
+	
 }

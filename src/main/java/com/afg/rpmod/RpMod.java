@@ -23,14 +23,18 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -48,6 +52,9 @@ import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
+import com.afg.rpmod.jobs.Inventor;
+import com.afg.rpmod.jobs.Job;
+import com.afg.rpmod.jobs.Inventor.EnumDiscoverableType;
 import com.afg.rpmod.jobs.crafting.CancelableShapedOreRecipe;
 import com.afg.rpmod.jobs.crafting.CancelableShapedRecipe;
 import com.afg.rpmod.jobs.crafting.CancelableShapelessOreRecipe;
@@ -57,7 +64,7 @@ import com.afg.rpmod.network.UpdateTileEntityServer;
 import com.afg.rpmod.proxy.CommonProxy;
 
 @Mod(
-		modid = RpMod.VERSION,
+		modid = RpMod.MODID,
 		name = "RP Mod",
 		version = RpMod.VERSION,
 		clientSideOnly = false,
@@ -72,7 +79,6 @@ public class RpMod
 	public static SimpleNetworkWrapper networkWrapper;
 	@SidedProxy(clientSide="com.afg.rpmod.proxy.ClientProxy", serverSide="com.afg.rpmod.proxy.CommonProxy")
 	public static CommonProxy proxy;	
-	
 	
     @ObjectHolder(MODID)
     public static class Blocks
@@ -91,6 +97,7 @@ public class RpMod
         public static final Item apartmentBlock = null;
         public static final Item apartmentDoor = null;
     }
+    
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
@@ -108,8 +115,8 @@ public class RpMod
 	public void postInit(FMLPostInitializationEvent event){
 		//Replace crafting recipes with custom ones
 		List<Item> changedRecipes = new ArrayList<Item>();
-//		changedRecipes.add(net.minecraft.init.Items.ARROW);
-		
+		changedRecipes.addAll(Job.getAllExclusiveRecipes());
+		changedRecipes.addAll(Inventor.getDiscoverableItems());
 		
 		List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();
 		//Create duplicate to avoid concurrent modification
@@ -132,7 +139,7 @@ public class RpMod
 			}
 		}
 	}
-
+	
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event)
 	{

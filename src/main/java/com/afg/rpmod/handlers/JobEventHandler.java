@@ -8,6 +8,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.jobs.Inventor;
 import com.afg.rpmod.jobs.Job;
 import com.afg.rpmod.jobs.crafting.CraftingEvent;
 
@@ -40,7 +41,7 @@ public class JobEventHandler {
 			data.getJob().onKill(e);
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onLivingDropItems(LivingDropsEvent e){
 		if(e.getSource().getEntity() instanceof EntityPlayer){
@@ -52,11 +53,15 @@ public class JobEventHandler {
 	@SubscribeEvent
 	public void onCustomCraft(CraftingEvent e){
 		IPlayerData data = e.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
-		if(e.getStack() != null && e.getStack().getItem() != null && data != null && data.getJob() != null)
-			for(Item i : data.getJob().getExclusiveCraftingRecipes())
-				if(i == e.getStack().getItem())
-					e.setCanceled(false);
-		e.setCanceled(true);
+		if(Job.isExclusiveRecipe(e.getStack().getItem())){
+			if(data != null && data.getJob() != null)
+				for(Item i : data.getJob().getAvailableRecipes())
+					if(i == e.getStack().getItem())
+						e.setCanceled(!Inventor.isDiscovered(e.getStack().getItem()));
+			e.setCanceled(true);
+		} else {
+			e.setCanceled(!Inventor.isDiscovered(e.getStack().getItem()));
+		}
 	}
 
 }

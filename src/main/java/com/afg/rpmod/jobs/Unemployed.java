@@ -19,8 +19,8 @@ public class Unemployed extends Job {
 	}
 
 	@Override
-	public JobType getType() {
-		return JobType.UNEMPLOYED;
+	public EnumJobType getType() {
+		return EnumJobType.UNEMPLOYED;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class Unemployed extends Job {
 	}
 
 	@Override
-	public Item[] getExclusiveCraftingRecipes() {
+	public Item[] getAvailableRecipes() {
 		return new Item[]{};
 	}
 

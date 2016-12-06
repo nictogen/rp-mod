@@ -47,16 +47,16 @@ public class Hunter extends Job {
 	}
 
 	@Override
-	public Item[] getExclusiveCraftingRecipes() {
+	public Item[] getAvailableRecipes() {
 		if(getData().getJobLvl() > 1)
-			return new Item[]{Items.LEATHER};
+			return this.getType().getExclusiveItems();
 		else 
 			return new Item[]{};
 	}
 
 	@Override
-	public JobType getType() {
-		return JobType.HUNTER;
+	public EnumJobType getType() {
+		return EnumJobType.HUNTER;
 	}
 
 }
