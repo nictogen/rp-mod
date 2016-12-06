@@ -1,0 +1,10 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "rp-mod:trashCan"
+	},
+	"variants": {
+		"normal": [{"rp-mod:trashCan"}],
+		"inventory": [{"forge:default-block"}]
+	}
+}

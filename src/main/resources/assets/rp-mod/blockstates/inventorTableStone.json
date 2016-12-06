@@ -1,0 +1,10 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "rp-mod:inventorTableStone"
+	},
+	"variants": {
+		"normal": [{"rp-mod:inventorTableStone"}],
+		"inventory": [{"forge:default-block"}]
+	}
+}
