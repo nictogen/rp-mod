@@ -67,7 +67,7 @@ public class Inventor extends Job {
 		}
 		return discoverableItems;
 	}
-	
+
 	public static enum EnumDiscoverableType{
 		STONE_AXE(Items.STONE_AXE),
 		STONE_PICK(Items.STONE_PICKAXE),
@@ -85,14 +85,14 @@ public class Inventor extends Job {
 		RSTEW(Items.RABBIT_STEW),
 		BOW(Items.BOW),
 		ARROW(Items.ARROW);
-		
+
 		private Item item;
 		private boolean discovered = false;
 
 		EnumDiscoverableType(Item item){
 			this.item = item;
 		}
-		
+
 		EnumDiscoverableType(Block block){
 			this.item = Item.getItemFromBlock(block);
 		}
@@ -107,7 +107,9 @@ public class Inventor extends Job {
 		}
 
 		public String getName(){
-			return item.getUnlocalizedName();
+			if(item != null)
+				return item.getUnlocalizedName();
+			return "";
 		}
 	}
 

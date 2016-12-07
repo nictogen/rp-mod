@@ -70,7 +70,7 @@ public class DiscoveryListGui extends GuiScreen {
 			InventorTableTE te = (InventorTableTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.table.getPos());
 			EnumDiscoverableType discoverable = null;
 			for(EnumDiscoverableType d : Inventor.discoverables)
-				if(d.getName() != null && d.getName() == this.buttonList.get(button.id - 2).displayString)
+				if(d.getName() == this.buttonList.get(button.id - 2).displayString)
 					discoverable = d;
 			if(te != null && discoverable != null){
 				NBTTagCompound tag = new NBTTagCompound();
