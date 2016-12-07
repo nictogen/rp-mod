@@ -3,8 +3,10 @@ package com.afg.rpmod.jobs;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -71,13 +73,28 @@ public class Inventor extends Job {
 		STONE_PICK(Items.STONE_PICKAXE),
 		STONE_SHOVEL(Items.STONE_SHOVEL),
 		STONE_HOE(Items.STONE_HOE),
-		STONE_SWORD(Items.STONE_SWORD);
-
+		STONE_SWORD(Items.STONE_SWORD),
+		LEATHER_BOOTS(Items.LEATHER_BOOTS),
+		LEATHER_LEGGINGS(Items.LEATHER_LEGGINGS),
+		LEATHER_CHESTPLATE(Items.LEATHER_CHESTPLATE),
+		LEATHER_HELMET(Items.LEATHER_HELMET),
+		TORCH(Blocks.TORCH),
+		BED(Blocks.BED),
+		BOAT(Items.BOAT),
+		MSTEW(Items.MUSHROOM_STEW),
+		RSTEW(Items.RABBIT_STEW),
+		BOW(Items.BOW),
+		ARROW(Items.ARROW);
+		
 		private Item item;
 		private boolean discovered = false;
 
 		EnumDiscoverableType(Item item){
 			this.item = item;
+		}
+		
+		EnumDiscoverableType(Block block){
+			this.item = Item.getItemFromBlock(block);
 		}
 
 		public boolean isDiscovered(){

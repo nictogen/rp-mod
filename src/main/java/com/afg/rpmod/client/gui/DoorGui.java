@@ -23,8 +23,6 @@ import com.afg.rpmod.network.UpdateTileEntityServer;
 
 public class DoorGui extends GuiScreen {
 
-	protected ResourceLocation location = new ResourceLocation(RpMod.MODID, "textures/gui/background.png");
-
 	protected BlockPos pos;
 	public DoorGui(BlockPos pos){
 		this.pos = pos;
@@ -66,7 +64,7 @@ public class DoorGui extends GuiScreen {
 	public void drawScreen(int par1, int par2, float par3)
 	{
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		Minecraft.getMinecraft().renderEngine.bindTexture(location);
+		Minecraft.getMinecraft().renderEngine.bindTexture(RpMod.guiTextures);
 		int i = (this.width - 200) / 2;
 		int j = ((this.height - 100) / 2);
 		

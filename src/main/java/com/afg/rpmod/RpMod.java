@@ -44,6 +44,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import com.afg.rpmod.blocks.ApartmentBlock;
 import com.afg.rpmod.blocks.ApartmentDoor;
 import com.afg.rpmod.blocks.CityBlock;
+import com.afg.rpmod.blocks.InventorTable;
 import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
@@ -73,8 +74,10 @@ public class RpMod
 	public static final String MODID = "rp-mod";
 	public static final String VERSION = "0.1";
 	public static SimpleNetworkWrapper networkWrapper;
+	public static ResourceLocation guiTextures = new ResourceLocation(RpMod.MODID, "textures/gui/background.png");
 	@SidedProxy(clientSide="com.afg.rpmod.proxy.ClientProxy", serverSide="com.afg.rpmod.proxy.CommonProxy")
 	public static CommonProxy proxy;	
+	
 	
     @ObjectHolder(MODID)
     public static class Blocks
@@ -83,6 +86,7 @@ public class RpMod
         public static final Block plotBlock = null;
         public static final Block apartmentBlock = null;
         public static final Block apartmentDoor = null;
+        public static final Block inventorTable = null;
     }
     
     @ObjectHolder(MODID)
@@ -92,6 +96,7 @@ public class RpMod
         public static final Item plotBlock = null;
         public static final Item apartmentBlock = null;
         public static final Item apartmentDoor = null;
+        public static final Item inventorTable = null;
     }
     
 	@EventHandler
@@ -144,11 +149,13 @@ public class RpMod
 		event.getRegistry().registerAll(new CityBlock().setRegistryName(RpMod.MODID, "cityBlock"), 
 				new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"), 
 				new ApartmentBlock().setRegistryName(RpMod.MODID, "apartmentBlock"),
-				new ApartmentDoor().setRegistryName(RpMod.MODID, "apartmentDoor"));
+				new ApartmentDoor().setRegistryName(RpMod.MODID, "apartmentDoor"),
+				new InventorTable().setRegistryName(RpMod.MODID, "inventorTable"));
 		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
 		GameRegistry.registerTileEntity(PlotBlock.PlotBlockTE.class, RpMod.MODID + "_plotBlock");
 		GameRegistry.registerTileEntity(ApartmentBlock.ApartmentBlockTE.class, RpMod.MODID + "_apartmentBlock");
 		GameRegistry.registerTileEntity(ApartmentDoor.ApartmentDoorTE.class, RpMod.MODID + "_apartmentDoor");
+		GameRegistry.registerTileEntity(InventorTable.InventorTableTE.class, RpMod.MODID + "_inventorTable");
 	}
 
 	@SubscribeEvent
@@ -157,7 +164,8 @@ public class RpMod
 		Block[] blocks = {
 				Blocks.cityBlock,
 				Blocks.plotBlock,
-				Blocks.apartmentBlock
+				Blocks.apartmentBlock,
+				Blocks.inventorTable
 		};
 		for (Block block : blocks){
 			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
