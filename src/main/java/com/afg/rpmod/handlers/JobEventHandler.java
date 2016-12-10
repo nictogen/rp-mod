@@ -7,6 +7,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.entities.EntityNPC;
@@ -35,15 +36,13 @@ public class JobEventHandler {
 		}
 	}
 
-	@SubscribeEvent
-	public void onEntityInteract(PlayerInteractEvent.EntityInteract e){
-		System.out.println("dfaf");
-		if(e.getTarget() instanceof EntityNPC){
-			System.out.println("dfaf");
-		}
+	@SubscribeEvent 
+	public void afterCraft(PlayerEvent.ItemCraftedEvent e){
+		IPlayerData data = e.player.getCapability(IPlayerData.PLAYER_DATA, null);
+		data.getJob().afterCraft(e);
 	}
-	
-	
+
+
 	@SubscribeEvent
 	public void onKillEntity(LivingDeathEvent e){
 		if(e.getSource().getEntity() instanceof EntityPlayer){
@@ -61,6 +60,7 @@ public class JobEventHandler {
 			data.getJob().onLivingDrops(e);
 		}
 	}
+
 	@SubscribeEvent
 	public void onCustomCraft(CraftingEvent e){
 		IPlayerData data = e.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);

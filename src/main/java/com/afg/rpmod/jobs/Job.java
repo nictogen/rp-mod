@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 
 import com.afg.rpmod.capabilities.IPlayerData;
 
@@ -59,6 +60,7 @@ public abstract class Job {
 	public void onUpdate(){}
 	public void onKill(LivingDeathEvent e){}
 	public void onLivingDrops(LivingDropsEvent e){}
+	public void afterCraft(ItemCraftedEvent e){}
 	
 	public EntityPlayer getPlayer(){
 		return this.player;
@@ -77,7 +79,11 @@ public abstract class Job {
 		//Declaration of Types
 		UNEMPLOYED(0, Item.getItemFromBlock(Blocks.DIRT), Unemployed.class),
 		HUNTER(1, Items.BOW, Hunter.class, Items.LEATHER),
-		INVENTOR(2, Item.getItemFromBlock(Blocks.LEVER), Inventor.class);
+		INVENTOR(2, Item.getItemFromBlock(Blocks.LEVER), Inventor.class),
+		COOK(3, Item.getItemFromBlock(Blocks.FURNACE), Cook.class, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_FISH, Items.COOKED_MUTTON,
+				Items.COOKED_PORKCHOP, Items.COOKED_RABBIT, Items.RABBIT_STEW, Items.MUSHROOM_STEW, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, 
+				Items.COOKIE, Items.CAKE, Items.BREAD, Items.BEETROOT_SOUP, Items.BAKED_POTATO);
+		//TODO Items.PUMPKIN_PIE, 
 		//Variables for JobType
 		private int id;
 		private Class<? extends Job> job;

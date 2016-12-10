@@ -44,9 +44,6 @@ public class InventorTableGui extends GuiContainer{
 				this.mode = PRERESEARCH;
 				this.buttonList.add(new GuiButton(0, this.width / 2 - 60, this.height/2 - 60, 120, 20, "Start Research: $500"));
 				//Start research for $$
-			} else if(te.completion >= 100){
-				this.mode = COMPLETE;
-				//Completion button
 			} else if(te.discoverable != null){
 				this.mode = REGULAR;
 				this.buttonList.add(new GuiButton(1, this.width / 2 - 60, this.height/2 - 40, 120, 20, "Research Item:       "));
