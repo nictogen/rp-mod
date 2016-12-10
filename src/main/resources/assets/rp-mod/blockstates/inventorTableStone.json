@@ -3,8 +3,8 @@
 	"defaults": {
 		"model": "rp-mod:inventorTableStone"
 	},
-	"variants": {
-		"normal": [{"rp-mod:inventorTableStone"}],
-		"inventory": [{"forge:default-block"}]
-	}
+ 	"variants": {
+        "normal": [{}],
+        "inventory": [{}]
+  }
 }

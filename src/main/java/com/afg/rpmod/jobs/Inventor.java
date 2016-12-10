@@ -79,8 +79,7 @@ public class Inventor extends Job {
 		LEATHER_CHESTPLATE(Items.LEATHER_CHESTPLATE),
 		LEATHER_HELMET(Items.LEATHER_HELMET),
 		TORCH(Blocks.TORCH),
-		BED(Blocks.BED),
-		BOAT(Items.BOAT),
+		BED(Items.BED),
 		MSTEW(Items.MUSHROOM_STEW),
 		RSTEW(Items.RABBIT_STEW),
 		BOW(Items.BOW),
@@ -111,13 +110,17 @@ public class Inventor extends Job {
 				return item.getUnlocalizedName();
 			return "";
 		}
+
+		public Item getDisplayItem(){
+			return this.item;
+		}
 	}
 
 	public static class DiscoveryData extends WorldSavedData {
 		private static final String DATA_NAME = RpMod.MODID + "_DiscoveryData";
 
 		public DiscoveryData() {
-			super(DATA_NAME);
+			this(DATA_NAME);
 		}
 		public DiscoveryData(String s) {
 			super(s);
@@ -156,9 +159,13 @@ public class Inventor extends Job {
 
 	@SubscribeEvent
 	public static void sendNewDiscoveriesToClient(TickEvent.WorldTickEvent e){
-		if(!e.world.isRemote && discoveriesChanged){
+		if(!e.world.isRemote){
+			if(discoveriesChanged){
+				DiscoveryData.get(e.world).markDirty();
+				discoveriesChanged = false;
+			}
 			RpMod.networkWrapper.sendToAll(new UpdateClientDiscoveryData(DiscoveryData.get(e.world)));
-			discoveriesChanged = false;
+			
 		}
 	}
 }

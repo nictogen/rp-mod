@@ -4,7 +4,7 @@
         "0": "blocks/log_big_oak",
         "1": "blocks/planks_big_oak",
         "2": "blocks/stone",
-        "particle": "blocks/planks_big_oak"
+        "particle": "blocks/lapis_block"
     },
     "elements": [
         {

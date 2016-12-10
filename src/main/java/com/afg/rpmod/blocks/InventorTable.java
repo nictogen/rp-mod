@@ -8,10 +8,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,7 +25,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.client.gui.InventorTableGui;
 import com.afg.rpmod.jobs.Inventor;
 import com.afg.rpmod.jobs.Inventor.EnumDiscoverableType;
@@ -44,10 +50,18 @@ public class InventorTable extends Block implements ITileEntityProvider{
 
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		if(playerIn.worldObj.isRemote){
-			if(this.getTE(worldIn, pos).getPlayer() == playerIn)
-				Minecraft.getMinecraft().displayGuiScreen(new InventorTableGui(pos));
+		if(!playerIn.worldObj.isRemote){
+			if(this.getTE(worldIn, pos).isApprovedPlayer(playerIn)){
+				FMLNetworkHandler handler = new FMLNetworkHandler();
+				handler.openGui(playerIn, RpMod.instance, InventorTableGui.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			}
 		}
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube(IBlockState state)
+	{
 		return false;
 	}
 
@@ -68,6 +82,7 @@ public class InventorTable extends Block implements ITileEntityProvider{
 
 		private UUID uuid;
 		private String playername;
+		public int cost = 500;
 		public EnumDiscoverableType discoverable;
 		public ItemStack requiredItem;
 		public int completion = 0;
@@ -92,14 +107,44 @@ public class InventorTable extends Block implements ITileEntityProvider{
 		@Override
 		public void updateServerData(NBTTagCompound tag) {
 			if(!tag.getString("purchase").isEmpty()){
+				IPlayerData data = this.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
 				EnumDiscoverableType discoverable = null;
 				for(EnumDiscoverableType d : Inventor.discoverables)
-					if(d.getName() == tag.getString("purchase"))
+					if(d.getName().contentEquals(tag.getString("purchase")))
 						discoverable = d;
-				if(discoverable != null){
+				if(discoverable != null && data.getMoney() >= this.cost){
 					this.discoverable = discoverable;
-					while(this.requiredItem == null || this.requiredItem.stackSize == 0)
-						this.requiredItem = new ItemStack(Items.APPLE, this.worldObj.rand.nextInt(17));
+					data.setMoney(data.getMoney() - this.cost);
+					this.requiredItem = this.newRequiredItem();
+				}
+			}
+			if(tag.getBoolean("research") == true){
+				if(this.getPlayer() != null){
+					ItemStack pItem = this.getPlayer().inventory.getItemStack();
+					if(pItem != null)
+						if(pItem.isItemEqual(this.requiredItem))
+							if(pItem.stackSize >= this.requiredItem.stackSize){
+								pItem.stackSize -= this.requiredItem.stackSize;
+								if(pItem.stackSize <= 0)
+									this.getPlayer().inventory.setItemStack(null);
+								this.completion += this.requiredItem.stackSize;
+								if(this.completion > 100){
+									this.completion = 0;
+									this.discoverable.setDiscovered(true);
+									IPlayerData data = this.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
+									data.setMoney(data.getMoney() + this.cost*5);
+									this.discoverable = null;
+									this.requiredItem = null;
+									for(int i = 0; i < 4; i++){
+										EntityFireworkRocket firework = new EntityFireworkRocket(this.worldObj, this.pos.getX(), this.pos.getY(), this.pos.getZ(), null);
+										this.worldObj.spawnEntityInWorld(firework);
+									}
+								} else {
+									this.requiredItem = this.newRequiredItem();
+								}
+
+
+							}
 				}
 			}
 			this.worldObj.notifyBlockUpdate(pos, this.worldObj.getBlockState(getPos()), this.worldObj.getBlockState(getPos()), 3);
@@ -113,8 +158,18 @@ public class InventorTable extends Block implements ITileEntityProvider{
 			if(u != null)
 				this.uuid = u;
 			this.completion = tag.getInteger("completion");
-			if(tag.getInteger("requiredItemNum") != 0)
+			if(tag.getInteger("requiredItemNum") != 0){
 				this.requiredItem = new ItemStack(Item.getItemById(tag.getInteger("requiredItem")), tag.getInteger("requiredItemNum"));
+			} else {
+				this.requiredItem = null;
+			}
+			if(tag.getString("discoverable").contentEquals("NULL"))
+				this.discoverable = null;
+			else
+				for(EnumDiscoverableType d : Inventor.discoverables)
+					if(d.getName().contentEquals(tag.getString("discoverable")))
+						this.discoverable = d;
+
 		}
 
 		@Override
@@ -128,6 +183,10 @@ public class InventorTable extends Block implements ITileEntityProvider{
 				tag.setInteger("requiredItemNum", this.requiredItem.stackSize);
 				tag.setInteger("requiredItem", Item.getIdFromItem(this.requiredItem.getItem()));
 			}
+			if(this.discoverable != null)
+				tag.setString("discoverable", this.discoverable.getName());
+			else
+				tag.setString("discoverable", "NULL");
 			return tag;
 		}
 
@@ -144,9 +203,62 @@ public class InventorTable extends Block implements ITileEntityProvider{
 			return null;
 		}
 
+		public ItemStack newRequiredItem(){
+			Item item = null;
+			int size = 1 + this.worldObj.rand.nextInt(16);
+			Item[] randomItemList = {Items.ARROW, Items.APPLE, Items.BED, Items.BEEF, Items.BANNER, Items.BLAZE_POWDER, Items.BOAT,
+					Items.BONE, Items.BOOK, Items.WOODEN_AXE, Items.WOODEN_HOE, Items.WOODEN_PICKAXE, Items.WOODEN_SHOVEL, Items.WOODEN_SWORD,
+					Items.STONE_AXE, Items.STONE_HOE, Items.STONE_PICKAXE, Items.STONE_SHOVEL, Items.STONE_SWORD, Items.IRON_AXE, Items.IRON_HOE,
+					Items.IRON_BOOTS, Items.IRON_CHESTPLATE, Items.IRON_HELMET, Items.IRON_HOE, Items.IRON_INGOT, Items.IRON_LEGGINGS, Items.LEATHER,
+					Items.LEATHER_BOOTS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET, Items.LEATHER_LEGGINGS, Items.BLAZE_ROD, Items.SLIME_BALL,
+					Items.STRING, Items.SNOWBALL, Items.BUCKET, Items.WATER_BUCKET, Items.LAVA_BUCKET, Items.COAL, Items.CARROT, Items.FISH, Items.FISHING_ROD,
+					Items.CHICKEN, Items.RABBIT_HIDE, Items.RABBIT_FOOT};
+			while(item == null || !Inventor.isDiscovered(item)){
+				item = randomItemList[this.worldObj.rand.nextInt(randomItemList.length)];
+			}
+			return new ItemStack(item, size); 
+		}
+		
+		
 		@Override
 		public boolean isApprovedPlayer(EntityPlayer player) {
-			return player == this.getPlayer();
+			IPlayerData data = player.getCapability(IPlayerData.PLAYER_DATA, null);
+			
+//			return data.getJob() != null && data.getJob().getType() == EnumJobType.INVENTOR && 
+				return	player == this.getPlayer();
 		}
+	}
+
+	public static class InventorTableContainer extends Container{
+
+		private InventorTableTE te;
+		public InventorTableContainer(InventoryPlayer invPlayer, InventorTableTE te){
+			this.te = te;
+
+			for (int y = 0; y < 3; ++y) {
+				for (int x = 0; x < 9; ++x) {
+					this.addSlotToContainer(new Slot(invPlayer, x + y * 9 + 9, 8 + x * 18, 97 + y * 18));
+				}
+			}
+
+			for (int x = 0; x < 9; ++x) {
+				this.addSlotToContainer(new Slot(invPlayer, x, 8 + x * 18, 155));
+			}
+
+
+		}
+
+		@Override
+		@Nullable
+		public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
+		{
+			return null;
+		}
+
+		@Override
+		public boolean canInteractWith(EntityPlayer playerIn) {
+			return te.isApprovedPlayer(playerIn);
+		}
+
 	}
 }

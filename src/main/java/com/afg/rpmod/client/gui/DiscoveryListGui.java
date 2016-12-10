@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.afg.rpmod.RpMod;
 import com.afg.rpmod.blocks.InventorTable.InventorTableTE;
+import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.jobs.Inventor;
 import com.afg.rpmod.jobs.Inventor.EnumDiscoverableType;
 import com.afg.rpmod.network.UpdateTileEntityServer;
@@ -36,14 +37,17 @@ public class DiscoveryListGui extends GuiScreen {
 		this.buttonList.add(new PageButton(1, i + 180, this.height/2, null, false));
 		int y = j + 13;
 		int page = 0;
-		int buttonID = 1;
-		for(Item item : Inventor.getDiscoverableItems()){
-			if(y > j + 150){
-				y = j + 13;
-				page++;
+		int buttonID = 2;
+		for(EnumDiscoverableType d : Inventor.EnumDiscoverableType.values()){
+			if(!d.isDiscovered()){
+				Item item = d.getDisplayItem();
+				if(y > j + 150){
+					y = j + 13;
+					page++;
+				}
+				this.buttonList.add(new DiscoveryButton(buttonID++, this.width / 2 - 70, y, 140, 20, d.getName(), new ItemStack(item, 1), page));
+				y += 22;
 			}
-			this.buttonList.add(new DiscoveryButton(buttonID++, this.width / 2 - 70, y, 140, 20, item.getUnlocalizedName(), new ItemStack(item, 1), page));
-			y += 22;
 		}
 		this.maxPage = page;
 	}
@@ -58,7 +62,7 @@ public class DiscoveryListGui extends GuiScreen {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
@@ -66,24 +70,28 @@ public class DiscoveryListGui extends GuiScreen {
 		case 0: this.page--; break;
 		case 1: this.page++; break;
 		}
+		IPlayerData data = Minecraft.getMinecraft().thePlayer.getCapability(IPlayerData.PLAYER_DATA, null);
 		if(button.id > 1){
 			InventorTableTE te = (InventorTableTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.table.getPos());
-			EnumDiscoverableType discoverable = null;
-			for(EnumDiscoverableType d : Inventor.discoverables)
-				if(d.getName() == this.buttonList.get(button.id - 2).displayString)
-					discoverable = d;
-			if(te != null && discoverable != null){
-				NBTTagCompound tag = new NBTTagCompound();
-				tag.setString("purchase", discoverable.getName());
-				RpMod.networkWrapper.sendToServer(new UpdateTileEntityServer(tag, this.table.getPos()));
-				Minecraft.getMinecraft().displayGuiScreen(new InventorTableGui(this.table.getPos()));
+			if(data.getMoney() >= te.cost){
+				EnumDiscoverableType discoverable = null;
+				for(EnumDiscoverableType d : Inventor.discoverables){
+					if(d.getName().contentEquals(this.buttonList.get(button.id).displayString))
+						discoverable = d;
+				}
+				if(te != null && discoverable != null){
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("purchase", discoverable.getName());
+					RpMod.networkWrapper.sendToServer(new UpdateTileEntityServer(tag, this.table.getPos()));
+					Minecraft.getMinecraft().displayGuiScreen(null);
+				}
 			}
 		}
 		if(this.page < 0)
 			this.page = 0;
 		if(this.page > this.maxPage)
 			this.page = this.maxPage;
-		
+
 	}
 
 	@Override
@@ -100,8 +108,6 @@ public class DiscoveryListGui extends GuiScreen {
 		//Foreground(shorter than it should be)
 		//Creates a longer box without making new texture
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 90);
-
-		//		this.drawCenteredString(this.fontRendererObj, this.name, this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
 		super.drawScreen(par1, par2, par3);
 	}
 
@@ -155,7 +161,7 @@ public class DiscoveryListGui extends GuiScreen {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(this.xPosition + 20, this.yPosition + (this.height - 8) / 2, 0);
 				GlStateManager.scale(0.8, 0.8, 1.0);
-				
+
 				String name = I18n.format(this.displayString + ".name");
 				if(name.length() > 15)
 					name = name.substring(0, 15);
