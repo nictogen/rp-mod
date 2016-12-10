@@ -60,6 +60,7 @@ import com.afg.rpmod.jobs.crafting.CancelableShapedOreRecipe;
 import com.afg.rpmod.jobs.crafting.CancelableShapedRecipe;
 import com.afg.rpmod.jobs.crafting.CancelableShapelessOreRecipe;
 import com.afg.rpmod.jobs.crafting.CancelableShapelessRecipe;
+import com.afg.rpmod.network.SendJobChoiceToServer;
 import com.afg.rpmod.network.UpdateClientDiscoveryData;
 import com.afg.rpmod.network.UpdateClientPlayerData;
 import com.afg.rpmod.network.UpdateTileEntityServer;
@@ -130,6 +131,8 @@ public class RpMod
 				netIndex++, Side.SERVER);
 		networkWrapper.registerMessage(UpdateClientDiscoveryData.Handler.class, UpdateClientDiscoveryData.class,
 				netIndex++, Side.CLIENT);
+		networkWrapper.registerMessage(SendJobChoiceToServer.Handler.class, SendJobChoiceToServer.class,
+				netIndex++, Side.SERVER);
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 		
 		

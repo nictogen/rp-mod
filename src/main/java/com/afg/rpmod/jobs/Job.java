@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 import com.afg.rpmod.capabilities.IPlayerData;
-import com.afg.rpmod.jobs.Inventor.EnumDiscoverableType;
 
 public abstract class Job {
 	private EntityPlayer player;
@@ -74,17 +75,19 @@ public abstract class Job {
 	//Enum of jobs that serve as a factory. Probs overkill but w/e
 	public static enum EnumJobType {
 		//Declaration of Types
-		UNEMPLOYED(0, Unemployed.class),
-		HUNTER(1, Hunter.class, Items.LEATHER),
-		INVENTOR(2, Inventor.class);
+		UNEMPLOYED(0, Item.getItemFromBlock(Blocks.DIRT), Unemployed.class),
+		HUNTER(1, Items.BOW, Hunter.class, Items.LEATHER),
+		INVENTOR(2, Item.getItemFromBlock(Blocks.LEVER), Inventor.class);
 		//Variables for JobType
 		private int id;
 		private Class<? extends Job> job;
+		private Item displayItem;
 		private Item[] exclusiveItems;
 		//Constructor
-		EnumJobType(int id, Class<? extends Job> job, Item...exclusiveItems){
+		EnumJobType(int id, Item displayItem, Class<? extends Job> job, Item...exclusiveItems){
 			this.id = id;
 			this.job = job;
+			this.displayItem = displayItem;
 			this.exclusiveItems = exclusiveItems;
 		}
 
@@ -105,6 +108,10 @@ public abstract class Job {
 		
 		public Item[] getExclusiveItems(){
 			return this.exclusiveItems;
+		}
+		
+		public ItemStack getDisplayItem(){
+			return new ItemStack(this.displayItem, 1);
 		}
 	}
 

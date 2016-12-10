@@ -5,6 +5,7 @@ import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
@@ -58,5 +59,7 @@ public class Hunter extends Job {
 	public EnumJobType getType() {
 		return EnumJobType.HUNTER;
 	}
+
+	
 
 }
