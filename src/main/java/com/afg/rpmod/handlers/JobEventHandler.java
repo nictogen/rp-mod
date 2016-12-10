@@ -67,8 +67,10 @@ public class JobEventHandler {
 		if(Job.isExclusiveRecipe(e.getStack().getItem())){
 			if(data != null && data.getJob() != null)
 				for(Item i : data.getJob().getAvailableRecipes())
-					if(i == e.getStack().getItem())
+					if(i == e.getStack().getItem()){
 						e.setCanceled(!Inventor.isDiscovered(e.getStack().getItem()));
+						return;
+					}
 			e.setCanceled(true);
 		} else {
 			e.setCanceled(!Inventor.isDiscovered(e.getStack().getItem()));

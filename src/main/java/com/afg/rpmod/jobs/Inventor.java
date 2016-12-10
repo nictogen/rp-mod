@@ -54,8 +54,9 @@ public class Inventor extends Job {
 	public static boolean isDiscovered(Item item){
 		for(EnumDiscoverableType d : discoverables){
 			if(d.item != null)
-				if(d.item == item)
+				if(d.item == item){
 					return d.isDiscovered();
+				}
 		}
 		return true;
 	}
