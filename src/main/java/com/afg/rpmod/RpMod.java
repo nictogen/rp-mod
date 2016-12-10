@@ -1,5 +1,6 @@
 package com.afg.rpmod;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,11 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
@@ -49,6 +52,7 @@ import com.afg.rpmod.blocks.PlotBlock;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
+import com.afg.rpmod.entities.NPCJobGiver;
 import com.afg.rpmod.handlers.GuiHandler;
 import com.afg.rpmod.jobs.Inventor;
 import com.afg.rpmod.jobs.Job;
@@ -103,6 +107,16 @@ public class RpMod
         public static final Item inventorTableStone = null;
     }
     
+    
+    @EventHandler
+	public void preInit(FMLPreInitializationEvent event)
+	{
+    	EntityRegistry.registerModEntity(NPCJobGiver.class, "NPCJobGiver", 0, this, 64, 20, false);
+		EntityRegistry.registerEgg(NPCJobGiver.class, Color.black.getRGB(), Color.blue.getRGB());
+		
+		this.proxy.registerRenders();
+	}
+    
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
@@ -117,6 +131,8 @@ public class RpMod
 		networkWrapper.registerMessage(UpdateClientDiscoveryData.Handler.class, UpdateClientDiscoveryData.class,
 				netIndex++, Side.CLIENT);
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		
+		
 	}
 	
 	@EventHandler
@@ -155,7 +171,7 @@ public class RpMod
 				new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"), 
 				new ApartmentBlock().setRegistryName(RpMod.MODID, "apartmentBlock"),
 				new ApartmentDoor().setRegistryName(RpMod.MODID, "apartmentDoor"),
-				new InventorTable().setRegistryName(RpMod.MODID, "inventorTableStone"));
+				new InventorTable("InventorTableStone").setRegistryName(RpMod.MODID, "inventorTableStone"));
 		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
 		GameRegistry.registerTileEntity(PlotBlock.PlotBlockTE.class, RpMod.MODID + "_plotBlock");
 		GameRegistry.registerTileEntity(ApartmentBlock.ApartmentBlockTE.class, RpMod.MODID + "_apartmentBlock");
@@ -175,7 +191,7 @@ public class RpMod
 		for (Block block : blocks){
 			event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
 		}
-		event.getRegistry().register(new ItemDoor(Blocks.apartmentDoor).setRegistryName(Blocks.apartmentDoor.getRegistryName()));
+		event.getRegistry().register(new ItemDoor(Blocks.apartmentDoor).setRegistryName(Blocks.apartmentDoor.getRegistryName()).setUnlocalizedName("ApartmentDoor"));
 	}
 	
 	@SubscribeEvent

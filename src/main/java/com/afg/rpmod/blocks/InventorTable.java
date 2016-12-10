@@ -35,8 +35,9 @@ import com.afg.rpmod.jobs.Inventor.EnumDiscoverableType;
 
 public class InventorTable extends Block implements ITileEntityProvider{
 
-	public InventorTable() {
+	public InventorTable(String name) {
 		super(Material.ROCK);
+		this.setUnlocalizedName(name);
 	}
 
 	@Override

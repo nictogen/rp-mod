@@ -5,9 +5,11 @@ import net.minecraft.item.Item;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.entities.EntityNPC;
 import com.afg.rpmod.jobs.Inventor;
 import com.afg.rpmod.jobs.Job;
 import com.afg.rpmod.jobs.crafting.CraftingEvent;
@@ -33,6 +35,15 @@ public class JobEventHandler {
 		}
 	}
 
+	@SubscribeEvent
+	public void onEntityInteract(PlayerInteractEvent.EntityInteract e){
+		System.out.println("dfaf");
+		if(e.getTarget() instanceof EntityNPC){
+			System.out.println("dfaf");
+		}
+	}
+	
+	
 	@SubscribeEvent
 	public void onKillEntity(LivingDeathEvent e){
 		if(e.getSource().getEntity() instanceof EntityPlayer){

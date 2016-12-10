@@ -41,7 +41,6 @@ public class CityUtils {
 					cancel = true;
 			}
 		}
-		System.out.println(cancel);
 		if(cancel == true)
 			for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 				PlotBlockTE te = (PlotBlockTE) t;

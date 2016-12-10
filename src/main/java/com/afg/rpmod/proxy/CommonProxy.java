@@ -11,4 +11,8 @@ public class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new JobEventHandler());
 		MinecraftForge.EVENT_BUS.register(new CityEventHandler());
 	}
+	
+	public void registerRenders(){
+		
+	}
 }
