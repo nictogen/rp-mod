@@ -38,6 +38,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -60,6 +61,8 @@ import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
 import com.afg.rpmod.capabilities.IPlayerData.Storage;
 import com.afg.rpmod.client.render.tileentities.CookPanTESR;
+import com.afg.rpmod.commands.CommandAcceptTrade;
+import com.afg.rpmod.commands.CommandTrade;
 import com.afg.rpmod.entities.NPCJobGiver;
 import com.afg.rpmod.handlers.GuiHandler;
 import com.afg.rpmod.jobs.Inventor;
@@ -177,6 +180,13 @@ public class RpMod
 		}
 	}
 
+	@EventHandler
+	public void serverLoad(FMLServerStartingEvent event)
+	{
+		event.registerServerCommand(new CommandTrade());
+		event.registerServerCommand(new CommandAcceptTrade());
+	}
+	
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event)
 	{
