@@ -170,5 +170,11 @@ public class Inventor extends Job {
 			
 		}
 	}
+	
+	@Override
+	public Block[] getAvailableMineables() {
+		return new Block[]{};
+	}
+
 
 }

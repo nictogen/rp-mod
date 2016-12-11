@@ -1,5 +1,6 @@
 package com.afg.rpmod.jobs;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,6 +61,10 @@ public class Hunter extends Job {
 		return EnumJobType.HUNTER;
 	}
 
-	
+	@Override
+	public Block[] getAvailableMineables() {
+		return new Block[]{};
+	}
+
 
 }

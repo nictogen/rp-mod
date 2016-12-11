@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import com.afg.rpmod.RpMod;
 import com.afg.rpmod.blocks.ApartmentDoor;
 import com.afg.rpmod.blocks.ApartmentDoor.ApartmentDoorTE;
+import com.afg.rpmod.blocks.CookPan;
+import com.afg.rpmod.blocks.CookPan.CookPanTE;
 import com.afg.rpmod.blocks.InventorTable;
 import com.afg.rpmod.blocks.InventorTable.InventorTableTE;
 import com.afg.rpmod.capabilities.IPlayerData;
@@ -45,6 +47,10 @@ public class InfoOverlay extends Gui {
 				InventorTableTE te = ((InventorTable) RpMod.Blocks.inventorTableStone).getTE(Minecraft.getMinecraft().theWorld, hit.getBlockPos());
 				if(te.getPlayer() != null)
 					s = te.getPlayer().getName() + "'s Inventor Table";
+			}  else if (b instanceof CookPan){
+				CookPanTE te = ((CookPan) RpMod.Blocks.cookPan).getTE(Minecraft.getMinecraft().theWorld, hit.getBlockPos());
+				if(te.getPlayer() != null)
+					s = te.getPlayer().getName() + "'s Cooking Pan";
 			}
 			this.drawCenteredString(Minecraft.getMinecraft().fontRendererObj, s, screenwidth/2, screenheight/2 - 15, 0x00FF00);
 		}

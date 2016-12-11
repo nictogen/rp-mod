@@ -1,5 +1,6 @@
 package com.afg.rpmod.jobs;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -23,7 +24,6 @@ public class Cook extends Job {
 
 	@Override
 	public Item[] getAvailableRecipes() {
-
 		switch(this.getData().getJobLvl()){
 		case 5: return new Item[]{Items.COOKIE, Items.BREAD, Items.BAKED_POTATO, Items.COOKED_FISH, Items.COOKED_RABBIT, Items.PUMPKIN_PIE, Items.BEETROOT_SOUP, Items.MUSHROOM_STEW,
 				Items.COOKED_CHICKEN, Items.COOKED_BEEF, Items.COOKED_MUTTON, Items.COOKED_PORKCHOP, Items.CAKE, Items.GOLDEN_CARROT, Items.RABBIT_STEW, Items.GOLDEN_APPLE};
@@ -49,6 +49,11 @@ public class Cook extends Job {
 	@Override
 	public EnumJobType getType() {
 		return EnumJobType.COOK;
+	}
+
+	@Override
+	public Block[] getAvailableMineables() {
+		return new Block[]{};
 	}
 
 }
