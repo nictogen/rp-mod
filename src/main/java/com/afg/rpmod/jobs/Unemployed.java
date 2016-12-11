@@ -2,9 +2,12 @@ package com.afg.rpmod.jobs;
 
 import com.afg.rpmod.capabilities.IPlayerData;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class Unemployed extends Job {
 
@@ -19,8 +22,8 @@ public class Unemployed extends Job {
 	}
 
 	@Override
-	public JobType getType() {
-		return JobType.UNEMPLOYED;
+	public EnumJobType getType() {
+		return EnumJobType.UNEMPLOYED;
 	}
 
 	@Override
@@ -29,8 +32,14 @@ public class Unemployed extends Job {
 	}
 
 	@Override
-	public Item[] getExclusiveCraftingRecipes() {
+	public Item[] getAvailableRecipes() {
 		return new Item[]{};
 	}
+	
+	@Override
+	public Block[] getAvailableMineables() {
+		return new Block[]{};
+	}
+
 
 }

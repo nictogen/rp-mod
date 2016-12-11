@@ -41,7 +41,6 @@ public class CityUtils {
 					cancel = true;
 			}
 		}
-		System.out.println(cancel);
 		if(cancel == true)
 			for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 				PlotBlockTE te = (PlotBlockTE) t;
@@ -80,6 +79,8 @@ public class CityUtils {
 	}
 
 	public static boolean roomForPlot(World world, PlotBlockTE plot){
+		if(plot == null)
+			return false;
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		for (TileEntity t : Collections2.filter(allTEs, pPlot)) {
 			PlotBlockTE te = (PlotBlockTE) t;
@@ -96,6 +97,8 @@ public class CityUtils {
 	}
 
 	public static boolean roomForCity(World world, CityBlockTE city){
+		if(city == null)
+			return false;
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		for (TileEntity t : Collections2.filter(allTEs, pCity)) {
 			CityBlockTE te = (CityBlockTE) t;
@@ -112,6 +115,8 @@ public class CityUtils {
 	}
 
 	public static boolean roomForApartment(World world, ApartmentBlockTE apt){
+		if(apt == null)
+			return false;
 		List<TileEntity> allTEs = world.loadedTileEntityList;
 		for (TileEntity t : Collections2.filter(allTEs, pApt)) {
 			ApartmentBlockTE te = (ApartmentBlockTE) t;
