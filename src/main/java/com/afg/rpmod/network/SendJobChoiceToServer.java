@@ -48,8 +48,11 @@ public class SendJobChoiceToServer implements IMessage{
 		@Override
 		public void run() {
 			IPlayerData data = (IPlayerData) ctx.getServerHandler().playerEntity.getCapability(IPlayerData.PLAYER_DATA, null);
-			if(data != null)
+			if(data != null){
 				data.setJob(message.job.createJob(ctx.getServerHandler().playerEntity));
+				data.setJobXP(0);
+				data.setJobLvl(1);
+			}
 		}
 
 	}
