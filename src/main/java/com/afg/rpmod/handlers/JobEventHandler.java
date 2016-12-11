@@ -3,15 +3,18 @@ package com.afg.rpmod.handlers;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.UseHoeEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.jobs.Farmer;
 import com.afg.rpmod.jobs.Inventor;
 import com.afg.rpmod.jobs.Job;
 import com.afg.rpmod.jobs.crafting.CraftingEvent;
@@ -37,6 +40,25 @@ public class JobEventHandler {
 		}
 	}
 
+	@SubscribeEvent
+	public void useHoe(UseHoeEvent e){
+		IPlayerData data = e.getEntityPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
+		if(!(data.getJob() instanceof Farmer))
+			e.setCanceled(true);
+	}
+	
+	@SubscribeEvent
+	public void makeBaby(BabyEntitySpawnEvent e ){
+		if(e.getCausedByPlayer() != null){
+			IPlayerData data = e.getCausedByPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
+			if(!(data.getJob() instanceof Farmer) && data.getJobLvl() < 2)
+				e.setCanceled(true);
+			else{
+				data.setJobXP(data.getJobXP() + 3);
+			}
+		}
+	}
+	
 	@SubscribeEvent
 	public void afterSmelt(PlayerEvent.ItemSmeltedEvent e){
 		IPlayerData data = e.player.getCapability(IPlayerData.PLAYER_DATA, null);
