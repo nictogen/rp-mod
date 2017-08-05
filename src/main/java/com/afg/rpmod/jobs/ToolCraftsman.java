@@ -42,7 +42,7 @@ public class ToolCraftsman extends Job {
 	public void afterCraft(ItemCraftedEvent e){
 		for(Item i : this.getAvailableRecipes()){
 			if(e.crafting.getItem() == i){
-				this.getData().setJobXP(this.getData().getJobXP() + 1 + this.getPlayer().worldObj.rand.nextInt(3));
+				this.getData().setJobXP(this.getData().getJobXP() + 1 + this.getPlayer().world.rand.nextInt(3));
 				return;
 			}
 		}

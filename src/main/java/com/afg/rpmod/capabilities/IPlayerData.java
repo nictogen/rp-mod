@@ -1,7 +1,8 @@
 package com.afg.rpmod.capabilities;
 
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.jobs.Job;
+import com.afg.rpmod.network.UpdateClientPlayerData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -12,9 +13,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.jobs.Job;
-import com.afg.rpmod.network.UpdateClientPlayerData;
+import javax.annotation.Nullable;
 
 public interface IPlayerData {
 
@@ -102,7 +101,7 @@ public interface IPlayerData {
 		}
 
 		public void sync(){
-			if(!this.player.worldObj.isRemote)
+			if(!this.player.world.isRemote)
 				RpMod.networkWrapper.sendTo(new UpdateClientPlayerData(this), (EntityPlayerMP) this.player);
 		}
 

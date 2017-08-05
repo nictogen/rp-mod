@@ -48,7 +48,7 @@ public class UpdateClientPlayerData implements IMessage{
 
 		@Override
 		public void run() {
-			PlayerData data = (PlayerData) Minecraft.getMinecraft().thePlayer.getCapability(IPlayerData.PLAYER_DATA, null);
+			PlayerData data = (PlayerData) Minecraft.getMinecraft().player.getCapability(IPlayerData.PLAYER_DATA, null);
 			if(data != null)
 				data.deserializeNBT(message.tag);
 		}

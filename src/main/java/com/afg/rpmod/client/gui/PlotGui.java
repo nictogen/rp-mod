@@ -1,18 +1,16 @@
 package com.afg.rpmod.client.gui;
 
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-
 import com.afg.rpmod.RpMod;
 import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
 import com.afg.rpmod.network.UpdateTileEntityServer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.input.Keyboard;
+
+import java.io.IOException;
 
 public class PlotGui extends LandGui {
 
@@ -25,7 +23,7 @@ public class PlotGui extends LandGui {
 	public void updateScreen()
 	{
 		super.updateScreen();
-		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity te = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te instanceof PlotBlockTE){
 			this.owner = ((PlotBlockTE) te).getName();
 			this.text2.setText("" + ((PlotBlockTE) te).range);
@@ -35,7 +33,7 @@ public class PlotGui extends LandGui {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		PlotBlockTE te = (PlotBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		PlotBlockTE te = (PlotBlockTE) Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te != null){
 			NBTTagCompound tag = new NBTTagCompound();
 			int amount = 1;

@@ -1,16 +1,15 @@
 package com.afg.rpmod.blocks;
 
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
+import com.afg.rpmod.client.gui.DoorGui;
+import com.afg.rpmod.utils.CityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -21,12 +20,6 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
-import com.afg.rpmod.client.gui.DoorGui;
-import com.afg.rpmod.utils.CityUtils;
-
 public class ApartmentDoor extends BlockDoor implements ITileEntityProvider{
 
 	public ApartmentDoor() {
@@ -35,7 +28,9 @@ public class ApartmentDoor extends BlockDoor implements ITileEntityProvider{
 		this.setUnlocalizedName("Apartment Door");
 	}
 
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX,
+			float hitY, float hitZ)
 	{
 		if(playerIn.isSneaking()){
 			if(worldIn.isRemote && this.getTE(worldIn, pos).getPlayer() == playerIn){
@@ -43,31 +38,32 @@ public class ApartmentDoor extends BlockDoor implements ITileEntityProvider{
 			}
 			return false;
 		} else if(!this.getTE(worldIn, pos).isLocked()){
-			return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
+			return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
 		} else return false;
 
 	}
 
-	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+	@Override public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
 	{
 		//Don't worry about checking for lock state if upper, since logic is on the bottom half
 		if (state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER)
 		{
-			super.neighborChanged(state, worldIn, pos, blockIn);
+			super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 		}
 		else
 		{
 			//If it's just going to destroy it, refer it to the super method
 			if (!worldIn.getBlockState(pos.down()).isSideSolid(worldIn,  pos.down(), EnumFacing.UP) || worldIn.getBlockState(pos.up()).getBlock() != this)
 			{
-				super.neighborChanged(state, worldIn, pos, blockIn);
+				super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 			}
 			// If it's going to get a chance to respond to a redstone signal, only let it through if it's not locked
 			else if(!this.getTE(worldIn, pos).isLocked())
-				super.neighborChanged(state, worldIn, pos, blockIn);
+				super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 		}
+
 	}
+
 
 	public ApartmentDoorTE getTE(World world, BlockPos pos) {
 		if(world.getBlockState(pos).getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER)
@@ -90,8 +86,8 @@ public class ApartmentDoor extends BlockDoor implements ITileEntityProvider{
 
 		@Override
 		public void update() {
-			if(CityUtils.apartmentInside(this.worldObj, getPos()) == null)
-				worldObj.destroyBlock(getPos(), true);
+			if(CityUtils.apartmentInside(this.world, getPos()) == null)
+				world.destroyBlock(getPos(), true);
 		}
 
 		@Override
@@ -115,7 +111,7 @@ public class ApartmentDoor extends BlockDoor implements ITileEntityProvider{
 		public void updateServerData(NBTTagCompound tag) {
 			if(tag.getBoolean("locked") != this.locked)
 				this.locked = tag.getBoolean("locked");
-			this.worldObj.notifyBlockUpdate(pos, this.worldObj.getBlockState(getPos()), this.worldObj.getBlockState(getPos()), 3);
+			this.world.notifyBlockUpdate(pos, this.world.getBlockState(getPos()), this.world.getBlockState(getPos()), 3);
 		}
 
 		@Override
@@ -137,12 +133,12 @@ public class ApartmentDoor extends BlockDoor implements ITileEntityProvider{
 		}
 
 		public ApartmentBlockTE getApartment(){
-			return CityUtils.apartmentInside(this.worldObj, this.pos);
+			return CityUtils.apartmentInside(this.world, this.pos);
 		}
 
 		public EntityPlayer getPlayer(){
-			if(this.worldObj.isRemote)
-				return Minecraft.getMinecraft().thePlayer;
+			if(this.world.isRemote)
+				return Minecraft.getMinecraft().player;
 			if(this.getApartment() != null)
 				return getApartment().getPlayer();
 			return null;

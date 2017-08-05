@@ -1,10 +1,6 @@
 package com.afg.rpmod.jobs;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.capabilities.IPlayerData;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -17,7 +13,9 @@ import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemSmeltedEvent;
 
-import com.afg.rpmod.capabilities.IPlayerData;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Job {
 	private EntityPlayer player;
@@ -97,22 +95,21 @@ public abstract class Job {
 		//Declaration of Types
 		UNEMPLOYED(0, Item.getItemFromBlock(Blocks.DIRT), Unemployed.class, null),
 		HUNTER(1, Items.BOW, Hunter.class, null, Items.LEATHER),
-		INVENTOR(2, Item.getItemFromBlock(Blocks.LEVER), Inventor.class, null),
-		COOK(3, Items.RABBIT_STEW, Cook.class, null, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_FISH, Items.COOKED_MUTTON,
+		COOK(2, Items.RABBIT_STEW, Cook.class, null, Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_FISH, Items.COOKED_MUTTON,
 				Items.COOKED_PORKCHOP, Items.COOKED_RABBIT, Items.RABBIT_STEW, Items.MUSHROOM_STEW, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, 
 				Items.COOKIE, Items.CAKE, Items.BREAD, Items.BEETROOT_SOUP, Items.BAKED_POTATO),
 				//TODO Items.PUMPKIN_PIE, 
-		MINER(4, Items.STONE_PICKAXE, Miner.class, new Block[]{Blocks.STONE, Blocks.COAL_ORE, Blocks.IRON_ORE, Blocks.GOLD_ORE, Blocks.DIAMOND_ORE,
+		MINER(3, Items.STONE_PICKAXE, Miner.class, new Block[]{Blocks.STONE, Blocks.COAL_ORE, Blocks.IRON_ORE, Blocks.GOLD_ORE, Blocks.DIAMOND_ORE,
 				Blocks.REDSTONE_ORE, Blocks.QUARTZ_ORE, Blocks.LAPIS_ORE, Blocks.EMERALD_ORE, Blocks.GLOWSTONE}),
-		TOOL_CRAFTSTMAN(5, Item.getItemFromBlock(Blocks.CRAFTING_TABLE), ToolCraftsman.class, null, Items.WOODEN_AXE, Items.WOODEN_HOE, Items.WOODEN_PICKAXE, Items.WOODEN_SHOVEL,
+		TOOL_CRAFTSTMAN(4, Item.getItemFromBlock(Blocks.CRAFTING_TABLE), ToolCraftsman.class, null, Items.WOODEN_AXE, Items.WOODEN_HOE, Items.WOODEN_PICKAXE, Items.WOODEN_SHOVEL,
 				Items.STONE_AXE, Items.STONE_HOE, Items.STONE_PICKAXE, Items.STONE_SHOVEL, Items.IRON_AXE, Items.IRON_HOE, Items.IRON_PICKAXE, Items.IRON_SHOVEL,
 				Items.GOLDEN_AXE, Items.GOLDEN_HOE, Items.GOLDEN_PICKAXE, Items.GOLDEN_SHOVEL, Items.DIAMOND_AXE, Items.DIAMOND_HOE, Items.DIAMOND_PICKAXE, Items.DIAMOND_SHOVEL, 
 				Items.SHEARS, Items.FISHING_ROD),
-		WEAPON_CRAFTSMAN(6, Items.LEATHER_CHESTPLATE, WeaponCraftsman.class, null, Items.WOODEN_SWORD, Items.STONE_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD,
+		WEAPON_CRAFTSMAN(5, Items.LEATHER_CHESTPLATE, WeaponCraftsman.class, null, Items.WOODEN_SWORD, Items.STONE_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD,
 				Items.SHIELD, Items.ARROW, Items.TIPPED_ARROW, Items.BOW, Items.LEATHER_BOOTS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET, Items.LEATHER_LEGGINGS,
 				Items.IRON_BOOTS, Items.IRON_LEGGINGS, Items.IRON_CHESTPLATE, Items.IRON_HELMET, Items.GOLDEN_BOOTS, Items.GOLDEN_LEGGINGS, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_HELMET,
 				Items.DIAMOND_BOOTS, Items.DIAMOND_LEGGINGS, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_HELMET),
-		FARMER(7, Items.WOODEN_HOE, Farmer.class, new Block[]{Blocks.CARROTS, Blocks.WHEAT, Blocks.BEETROOTS, Blocks.POTATOES, Blocks.MELON_BLOCK, Blocks.PUMPKIN});
+		FARMER(6, Items.WOODEN_HOE, Farmer.class, new Block[]{Blocks.CARROTS, Blocks.WHEAT, Blocks.BEETROOTS, Blocks.POTATOES, Blocks.MELON_BLOCK, Blocks.PUMPKIN});
 		
 		//Variables for JobType
 		private int id;

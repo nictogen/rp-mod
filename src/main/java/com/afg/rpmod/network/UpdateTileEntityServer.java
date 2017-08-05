@@ -39,7 +39,7 @@ public class UpdateTileEntityServer implements IMessage{
 	public static class Handler implements IMessageHandler<UpdateTileEntityServer, IMessage> {
 		@Override
 		public IMessage onMessage(UpdateTileEntityServer message, MessageContext ctx){
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runner(message, ctx));
 			return null;
 		}
@@ -55,8 +55,8 @@ public class UpdateTileEntityServer implements IMessage{
 
 		@Override
 		public void run() {
-			TileEntity te = ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.pos);
-			if(te != null && te instanceof IUpdatesFromClient && ((IUpdatesFromClient) te).isApprovedPlayer(ctx.getServerHandler().playerEntity))
+			TileEntity te = ctx.getServerHandler().player.world.getTileEntity(message.pos);
+			if(te != null && te instanceof IUpdatesFromClient && ((IUpdatesFromClient) te).isApprovedPlayer(ctx.getServerHandler().player))
 				((IUpdatesFromClient) te).updateServerData(message.tag);
 		}
 

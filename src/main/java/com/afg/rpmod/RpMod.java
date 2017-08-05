@@ -1,14 +1,21 @@
 package com.afg.rpmod;
 
-import java.awt.Color;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.afg.rpmod.blocks.*;
+import com.afg.rpmod.blocks.CookPan.CookPanTE;
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
+import com.afg.rpmod.capabilities.IPlayerData.Storage;
+import com.afg.rpmod.client.render.tileentities.CookPanTESR;
+import com.afg.rpmod.commands.CommandAcceptTrade;
+import com.afg.rpmod.commands.CommandTrade;
+import com.afg.rpmod.entities.NPCJobGiver;
+import com.afg.rpmod.network.SendJobChoiceToServer;
+import com.afg.rpmod.network.UpdateClientPlayerData;
+import com.afg.rpmod.network.UpdateTileEntityServer;
+import com.afg.rpmod.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -17,11 +24,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemDoor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -47,50 +49,23 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import com.afg.rpmod.blocks.ApartmentBlock;
-import com.afg.rpmod.blocks.ApartmentDoor;
-import com.afg.rpmod.blocks.CityBlock;
-import com.afg.rpmod.blocks.CookPan;
-import com.afg.rpmod.blocks.CookPan.CookPanTE;
-import com.afg.rpmod.blocks.InventorTable;
-import com.afg.rpmod.blocks.PlotBlock;
-import com.afg.rpmod.capabilities.IPlayerData;
-import com.afg.rpmod.capabilities.IPlayerData.PlayerData;
-import com.afg.rpmod.capabilities.IPlayerData.Storage;
-import com.afg.rpmod.client.render.tileentities.CookPanTESR;
-import com.afg.rpmod.commands.CommandAcceptTrade;
-import com.afg.rpmod.commands.CommandTrade;
-import com.afg.rpmod.entities.NPCJobGiver;
-import com.afg.rpmod.handlers.GuiHandler;
-import com.afg.rpmod.jobs.Inventor;
-import com.afg.rpmod.jobs.Job;
-import com.afg.rpmod.jobs.crafting.CancelableShapedOreRecipe;
-import com.afg.rpmod.jobs.crafting.CancelableShapedRecipe;
-import com.afg.rpmod.jobs.crafting.CancelableShapelessOreRecipe;
-import com.afg.rpmod.jobs.crafting.CancelableShapelessRecipe;
-import com.afg.rpmod.network.SendJobChoiceToServer;
-import com.afg.rpmod.network.UpdateClientDiscoveryData;
-import com.afg.rpmod.network.UpdateClientPlayerData;
-import com.afg.rpmod.network.UpdateTileEntityServer;
-import com.afg.rpmod.proxy.CommonProxy;
+import java.awt.*;
+import java.lang.reflect.Field;
 
 @Mod(
 		modid = RpMod.MODID,
 		name = "RP Mod",
 		version = RpMod.VERSION,
 		clientSideOnly = false,
-		serverSideOnly = false,
-		dependencies = "required-after:Forge@[12.18.2.2171,)"
+		serverSideOnly = false
 		)
 @Mod.EventBusSubscriber
 public class RpMod
 {
 
 	public static final String MODID = "rp-mod";
-	public static final String VERSION = "0.1";
+	public static final String VERSION = "0.2";
 	public static SimpleNetworkWrapper networkWrapper;
 	public static ResourceLocation guiTextures = new ResourceLocation(RpMod.MODID, "textures/gui/background.png");
 	@SidedProxy(clientSide="com.afg.rpmod.proxy.ClientProxy", serverSide="com.afg.rpmod.proxy.CommonProxy")
@@ -106,7 +81,6 @@ public class RpMod
 		public static final Block plotBlock = null;
 		public static final Block apartmentBlock = null;
 		public static final Block apartmentDoor = null;
-		public static final Block inventorTableStone = null;
 		public static final Block cookPan = null;
 	}
 
@@ -117,7 +91,6 @@ public class RpMod
 		public static final Item plotBlock = null;
 		public static final Item apartmentBlock = null;
 		public static final Item apartmentDoor = null;
-		public static final Item inventorTableStone = null;
 		public static final Item cookPan = null;
 	}
 
@@ -125,59 +98,30 @@ public class RpMod
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
-		EntityRegistry.registerModEntity(NPCJobGiver.class, "NPCJobGiver", 0, this, 64, 20, false);
-		EntityRegistry.registerEgg(NPCJobGiver.class, Color.black.getRGB(), Color.blue.getRGB());
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "npcJobGiver"), NPCJobGiver.class, "NPCJobGiver", 0, this, 64, 20, false);
+		EntityRegistry.registerEgg(new ResourceLocation(MODID, "npcJobGiver"), Color.black.getRGB(), Color.blue.getRGB());
 
-		this.proxy.registerRenders();
+		proxy.registerRenders();
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
 		CapabilityManager.INSTANCE.register(IPlayerData.class, new Storage(), PlayerData.class);
-		this.proxy.registerEventHandlers();
+		proxy.registerEventHandlers();
 		int netIndex = 0;
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		networkWrapper.registerMessage(UpdateClientPlayerData.Handler.class, UpdateClientPlayerData.class,
 				netIndex++, Side.CLIENT);
 		networkWrapper.registerMessage(UpdateTileEntityServer.Handler.class, UpdateTileEntityServer.class,
 				netIndex++, Side.SERVER);
-		networkWrapper.registerMessage(UpdateClientDiscoveryData.Handler.class, UpdateClientDiscoveryData.class,
-				netIndex++, Side.CLIENT);
 		networkWrapper.registerMessage(SendJobChoiceToServer.Handler.class, SendJobChoiceToServer.class,
 				netIndex++, Side.SERVER);
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-
 
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
-		//Replace crafting recipes with custom ones
-		List<Item> changedRecipes = new ArrayList<Item>();
-		changedRecipes.addAll(Job.getAllExclusiveRecipes());
-		changedRecipes.addAll(Inventor.getDiscoverableItems());
-
-		List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();
-		//Create duplicate to avoid concurrent modification
-		List<IRecipe> vanillaRecipes = new ArrayList<IRecipe>();
-		vanillaRecipes.addAll(recipeList);
-
-		for(IRecipe recipe : vanillaRecipes){
-			if(recipe.getRecipeOutput() != null && recipe.getRecipeOutput().getItem() != null && changedRecipes.contains(recipe.getRecipeOutput().getItem())){
-				recipeList.remove(recipe);
-				if(recipe instanceof ShapelessRecipes){
-					recipeList.add(new CancelableShapelessRecipe(recipe.getRecipeOutput(), ((ShapelessRecipes) recipe).recipeItems));
-				} else if (recipe instanceof ShapedRecipes){
-					ShapedRecipes sRecipe = (ShapedRecipes) recipe;
-					recipeList.add(new CancelableShapedRecipe(sRecipe.recipeWidth, sRecipe.recipeHeight, sRecipe.recipeItems, sRecipe.getRecipeOutput()));
-				} else if (recipe instanceof ShapedOreRecipe){
-					recipeList.add(new CancelableShapedOreRecipe((ShapedOreRecipe) recipe));
-				} else if (recipe instanceof ShapelessOreRecipe){
-					recipeList.add(new CancelableShapelessOreRecipe((ShapelessOreRecipe) recipe));
-				}
-			}
-		}
 	}
 
 	@EventHandler
@@ -194,13 +138,11 @@ public class RpMod
 				new PlotBlock().setRegistryName(RpMod.MODID, "plotBlock"), 
 				new ApartmentBlock().setRegistryName(RpMod.MODID, "apartmentBlock"),
 				new ApartmentDoor().setRegistryName(RpMod.MODID, "apartmentDoor"),
-				new InventorTable("inventorTableStone").setRegistryName(RpMod.MODID, "inventorTableStone"),
 				new CookPan("cookPan").setRegistryName(RpMod.MODID, "cookPan"));
 		GameRegistry.registerTileEntity(CityBlock.CityBlockTE.class, RpMod.MODID + "_cityBlock");
 		GameRegistry.registerTileEntity(PlotBlock.PlotBlockTE.class, RpMod.MODID + "_plotBlock");
 		GameRegistry.registerTileEntity(ApartmentBlock.ApartmentBlockTE.class, RpMod.MODID + "_apartmentBlock");
 		GameRegistry.registerTileEntity(ApartmentDoor.ApartmentDoorTE.class, RpMod.MODID + "_apartmentDoor");
-		GameRegistry.registerTileEntity(InventorTable.InventorTableTE.class, RpMod.MODID + "_inventorTableStone");
 		GameRegistry.registerTileEntity(CookPan.CookPanTE.class, RpMod.MODID + "_cookPan");
 	}
 
@@ -211,7 +153,6 @@ public class RpMod
 				Blocks.cityBlock,
 				Blocks.plotBlock,
 				Blocks.apartmentBlock,
-				Blocks.inventorTableStone,
 				Blocks.cookPan
 		};
 		for (Block block : blocks){
@@ -231,7 +172,7 @@ public class RpMod
 			ModelLoader.setCustomModelResourceLocation(item, 0, loc);
 			if(item.getUnlocalizedName().contains("cookPan")){
 				ModelBakery.registerItemVariants(item, loc);
-				ModelLoader.setCustomMeshDefinition(item, new ItemMeshDef(loc));
+				ModelLoader.setCustomMeshDefinition(item, stack -> loc);
 			}
 		}
 		ModelLoader.setCustomStateMapper(
@@ -239,17 +180,6 @@ public class RpMod
 				);
 
 		ClientRegistry.bindTileEntitySpecialRenderer(CookPanTE.class, new CookPanTESR());
-	}
-
-	public static class ItemMeshDef implements ItemMeshDefinition{
-		private ModelResourceLocation loc;
-		ItemMeshDef(ModelResourceLocation loc){
-			this.loc = loc;
-		}
-		@Override
-		public ModelResourceLocation getModelLocation(ItemStack stack) {
-			return this.loc;
-		}
 	}
 
 	@SubscribeEvent

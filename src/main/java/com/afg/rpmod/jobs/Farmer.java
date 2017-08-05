@@ -46,7 +46,7 @@ public class Farmer extends Job {
 
 		for(ItemStack i : e.getDrops()){
 			Item item = i.getItem();
-			if(item == Items.WHEAT || item == Items.BEETROOT|| i.stackSize > 1)
+			if(item == Items.WHEAT || item == Items.BEETROOT|| i.getCount() > 1)
 				for(int x = 0; x < dropsWithXP.length; x++){
 					Item xpDrops = dropsWithXP[x];
 					if(item == xpDrops){

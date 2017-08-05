@@ -1,10 +1,6 @@
 package com.afg.rpmod.commands;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.commands.CommandTrade.TradeOffer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -14,7 +10,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentBase;
 
-import com.afg.rpmod.commands.CommandTrade.TradeOffer;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class CommandAcceptTrade extends CommandBase{
 
@@ -23,19 +21,14 @@ public class CommandAcceptTrade extends CommandBase{
 		return 0;
 	}
 
-	@Override
-	public String getCommandName() {
+	@Override public String getName()
+	{
 		return "accepttrade";
 	}
 
-	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	@Override public String getUsage(ICommandSender sender)
+	{
 		return "/accepttrade <player>";
-	}
-
-	@Override
-	public List<String> getCommandAliases() {
-		return Collections.<String>emptyList();
 	}
 
 	@Override
@@ -48,8 +41,10 @@ public class CommandAcceptTrade extends CommandBase{
 			if(remove == null && to.offeree == sender && to.offerer == entityplayer){
 				remove = to;
 				TextComponentBase t = to.doTrade();
-				sender.addChatMessage(t);
-				entityplayer.addChatMessage(t);
+				if(sender instanceof EntityPlayer)
+				{
+					((EntityPlayer) sender).sendStatusMessage(t, true);
+				}
 			}
 		}
 		CommandTrade.pendingOffers.remove(remove);
@@ -60,11 +55,10 @@ public class CommandAcceptTrade extends CommandBase{
 		return true;
 	}
 
-	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server,
-			ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	@Override public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+	{
 		if(args.length == 1)
-			return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
+			return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
 		else return Collections.<String>emptyList();
 	}
 

@@ -1,11 +1,6 @@
 package com.afg.rpmod.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.capabilities.IPlayerData;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -21,7 +16,10 @@ import net.minecraft.util.text.TextComponentBase;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
-import com.afg.rpmod.capabilities.IPlayerData;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CommandTrade extends CommandBase{
 
@@ -32,19 +30,15 @@ public class CommandTrade extends CommandBase{
 		return 0;
 	}
 
-	@Override
-	public String getCommandName() {
+	@Override public String getName()
+	{
 		return "trade";
 	}
 
-	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	@Override public String getUsage(ICommandSender sender)
+	{
 		return "'/trade <playername> <youroffer> <theiroffer>'. Proper offer format is either '$<amount>' or '<item> <amount>' ";
-	}
 
-	@Override
-	public List<String> getCommandAliases() {
-		return Collections.<String>emptyList();
 	}
 
 	@Override
@@ -60,8 +54,8 @@ public class CommandTrade extends CommandBase{
 			int amount = parseInt(args[3], 1);
 			TradeOffer offer = new TradeOffer((EntityPlayer) sender.getCommandSenderEntity(), entityplayer, offerAmount, item, amount);
 			this.addOffer(offer);
-			entityplayer.addChatComponentMessage(new TextComponentString(sender.getCommandSenderEntity().getName() + " wants to trade " + args[1] + " for " + amount + " " + I18n.format(item.getUnlocalizedName() + ".name")));
-			((EntityPlayer) sender.getCommandSenderEntity()).addChatComponentMessage(new TextComponentString("You sent a trade to " + entityplayer.getName() + " asking for " + amount + " " + I18n.format(item.getUnlocalizedName() + ".name") + " for " + args[1]));
+			entityplayer.sendStatusMessage(new TextComponentString(sender.getCommandSenderEntity().getName() + " wants to trade " + args[1] + " for " + amount + " " + I18n.format(item.getUnlocalizedName() + ".name")), true);
+			((EntityPlayer) sender.getCommandSenderEntity()).sendStatusMessage(new TextComponentString("You sent a trade to " + entityplayer.getName() + " asking for " + amount + " " + I18n.format(item.getUnlocalizedName() + ".name") + " for " + args[1]), true);
 		} else {
 			Item item = getItemByText(sender, args[1]);
 			int offerAmount = parseInt(args[2], 1);
@@ -69,15 +63,15 @@ public class CommandTrade extends CommandBase{
 				int askingAmount =  parseInt(args[3].substring(1), 1);
 				TradeOffer offer = new TradeOffer((EntityPlayer) sender.getCommandSenderEntity(), entityplayer, item, offerAmount, askingAmount);
 				this.addOffer(offer);
-				entityplayer.addChatComponentMessage(new TextComponentString(sender.getCommandSenderEntity().getName() + " wants to trade " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name") + " for " + args[3]));
-				((EntityPlayer) sender.getCommandSenderEntity()).addChatComponentMessage(new TextComponentString("You sent a trade to " + entityplayer.getName() + " asking for " + args[3] + " for " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name")));
+				entityplayer.sendStatusMessage(new TextComponentString(sender.getCommandSenderEntity().getName() + " wants to trade " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name") + " for " + args[3]), true);
+				((EntityPlayer) sender.getCommandSenderEntity()).sendStatusMessage(new TextComponentString("You sent a trade to " + entityplayer.getName() + " asking for " + args[3] + " for " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name")), true);
 			} else {
 				Item askingItem = getItemByText(sender, args[3]);
 				int askingAmount = parseInt(args[4], 1);
 				TradeOffer offer = new TradeOffer((EntityPlayer) sender.getCommandSenderEntity(), entityplayer, item, offerAmount, askingItem, askingAmount);
 				this.addOffer(offer);
-				entityplayer.addChatComponentMessage(new TextComponentString(sender.getCommandSenderEntity().getName() + " wants to trade " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name") + " for " + askingAmount + " " + I18n.format(askingItem.getUnlocalizedName() + ".name")));
-				((EntityPlayer) sender.getCommandSenderEntity()).addChatComponentMessage(new TextComponentString("You sent a trade to " + entityplayer.getName() + " asking for " + askingAmount + " " + I18n.format(askingItem.getUnlocalizedName() + ".name") + " for " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name")));
+				entityplayer.sendStatusMessage(new TextComponentString(sender.getCommandSenderEntity().getName() + " wants to trade " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name") + " for " + askingAmount + " " + I18n.format(askingItem.getUnlocalizedName() + ".name")), true);
+				((EntityPlayer) sender.getCommandSenderEntity()).sendStatusMessage(new TextComponentString("You sent a trade to " + entityplayer.getName() + " asking for " + askingAmount + " " + I18n.format(askingItem.getUnlocalizedName() + ".name") + " for " + offerAmount + " " + I18n.format(item.getUnlocalizedName() + ".name")), true);
 			}
 		}
 	}
@@ -97,16 +91,15 @@ public class CommandTrade extends CommandBase{
 		return true;
 	}
 
-	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server,
-			ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	@Override public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+	{
 		if(args.length == 1)
-			return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
-		else if((args.length == 2 && !args[1].contains("$")) || 
+			return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+		else if((args.length == 2 && !args[1].contains("$")) ||
 				(args.length == 4 && !args[3].contains("$") && isNumerical(args[2])) ||
 				(args.length == 3 && args[1].contains("$")))
 			return(getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys()));
-		else 
+		else
 			return Collections.<String>emptyList();
 	}
 
@@ -243,16 +236,16 @@ public class CommandTrade extends CommandBase{
 
 			for(ItemStack stack : from.mainInventory){
 				if(stack != null && stack.getItem() == item){
-					if(amountToTransfer + stack.stackSize <= amount){
-						amountToTransfer += stack.stackSize;
+					if(amountToTransfer + stack.getCount() <= amount){
+						amountToTransfer += stack.getCount();
 						transfer.add(stack);
 					} else if(amountToTransfer < amount){
 						int size = amount - amountToTransfer;
 						amountToTransfer += size;
 						ItemStack temp = stack.copy();
-						temp.stackSize = size;
+						temp.setCount(size);
 						//TODO I think I can do this?
-						stack.stackSize -= size;
+						stack.setCount(stack.getCount() - size);
 						addOnly = temp;
 					}
 				}
@@ -276,7 +269,7 @@ public class CommandTrade extends CommandBase{
 			int amountHas = 0;
 			for(ItemStack stack : inventory.mainInventory){
 				if(stack != null && stack.getItem() == item)
-					amountHas += stack.stackSize;
+					amountHas += stack.getCount();
 			}
 			return amountHas >= amount;
 		}

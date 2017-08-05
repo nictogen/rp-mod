@@ -1,10 +1,5 @@
 package com.afg.rpmod.entities;
 
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
-
-import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +12,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+
 public abstract class EntityNPC extends EntityLiving{
 
 	double posXF = 0, posYF = 0, posZF = 0;
@@ -27,7 +25,7 @@ public abstract class EntityNPC extends EntityLiving{
 
 	public void onEntityUpdate()
 	{
-		this.worldObj.theProfiler.startSection("entityBaseTick");
+		this.world.profiler.startSection("entityBaseTick");
 
 		if (this.isRiding())
 		{
@@ -50,17 +48,17 @@ public abstract class EntityNPC extends EntityLiving{
 
 		if (this.posY < -64.0D)
 		{
-			this.kill();
+			this.setDead();
 		}
 
-		if (!this.worldObj.isRemote)
+		if (!this.world.isRemote)
 		{
 			this.setFlag(0, false);
 		}
 
 		this.firstUpdate = false;
-		this.worldObj.theProfiler.endSection();
-		this.worldObj.theProfiler.startSection("livingEntityBaseTick");
+		this.world.profiler.endSection();
+		this.world.profiler.startSection("livingEntityBaseTick");
 
 
 		boolean flag1 = true;
@@ -73,7 +71,7 @@ public abstract class EntityNPC extends EntityLiving{
 		this.prevRotationYawHead = this.rotationYawHead;
 		this.prevRotationYaw = this.rotationYaw;
 		this.prevRotationPitch = this.rotationPitch;
-		this.worldObj.theProfiler.endSection();
+		this.world.profiler.endSection();
 		super.onEntityUpdate();
 	}
 
@@ -82,7 +80,6 @@ public abstract class EntityNPC extends EntityLiving{
 
 	protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
 	{
-		System.out.println("asfsff");
 		if(stack != null && stack.getItem() == Item.getItemFromBlock(Blocks.COMMAND_BLOCK))
 			this.setDead();
 		return this.interact(player, stack, hand);

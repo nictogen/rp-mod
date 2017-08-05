@@ -1,9 +1,11 @@
 package com.afg.rpmod.blocks;
 
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.client.gui.ApartmentInfoGui;
+import com.afg.rpmod.client.gui.LandlordGui;
+import com.afg.rpmod.client.gui.PurchaseGui;
+import com.afg.rpmod.utils.CityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -22,12 +24,8 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
-import com.afg.rpmod.capabilities.IPlayerData;
-import com.afg.rpmod.client.gui.ApartmentInfoGui;
-import com.afg.rpmod.client.gui.LandlordGui;
-import com.afg.rpmod.client.gui.PurchaseGui;
-import com.afg.rpmod.utils.CityUtils;
+import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class ApartmentBlock extends Block implements ITileEntityProvider{
 
@@ -50,7 +48,7 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		if(playerIn.worldObj.isRemote ){
+		if(playerIn.world.isRemote ){
 			if(worldIn.getTileEntity(this.getTE(worldIn, pos).getPlot()) instanceof PlotBlockTE && ((PlotBlockTE) worldIn.getTileEntity(this.getTE(worldIn, pos).getPlot())).getPlayer() == playerIn){
 				Minecraft.getMinecraft().displayGuiScreen(new LandlordGui(pos));
 			} else if(this.getTE(worldIn, pos).playername.contains(EMPTY)){
@@ -121,9 +119,9 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 			if(tag.getInteger("height") != 0)
 				this.setHeight(tag.getInteger("height"));
 			if(tag.getString("purchase") != "")
-				this.purchase(this.worldObj.getPlayerEntityByName(tag.getString("purchase")));
+				this.purchase(this.world.getPlayerEntityByName(tag.getString("purchase")));
 			if(tag.getString("rent") != "")
-				this.startRenting(this.worldObj.getPlayerEntityByName(tag.getString("rent")));
+				this.startRenting(this.world.getPlayerEntityByName(tag.getString("rent")));
 			if(tag.getString("name") != "")
 				this.name = tag.getString("name");
 			if(tag.getBoolean("rentChange")){
@@ -138,7 +136,7 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 				this.setCost(tag.getInteger("cost"));
 			}
 
-			this.worldObj.notifyBlockUpdate(pos, this.worldObj.getBlockState(getPos()), this.worldObj.getBlockState(getPos()), 3);
+			this.world.notifyBlockUpdate(pos, this.world.getBlockState(getPos()), this.world.getBlockState(getPos()), 3);
 		}
 
 		@Override
@@ -188,7 +186,7 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 		}
 
 		public void setRange(int range){
-			if(range > this.range && !CityUtils.canExpand(worldObj, this, range - this.range))
+			if(range > this.range && !CityUtils.canExpand(world, this, range - this.range))
 				return;
 			this.range = range;
 			if(this.range > this.maxRange)
@@ -198,7 +196,7 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 		}
 
 		public void setHeight(int height){
-			if(height > this.height && !CityUtils.canExpandY(worldObj, this, height - this.height))
+			if(height > this.height && !CityUtils.canExpandY(world, this, height - this.height))
 				return;
 			this.height = height;
 			if(this.height > this.maxHeight)
@@ -213,14 +211,14 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 
 		public EntityPlayer getPlayer(){
 			if(this.uuid != null)
-				return this.worldObj.getPlayerEntityByUUID(this.uuid);
+				return this.world.getPlayerEntityByUUID(this.uuid);
 			return null;
 		}
 
 		@Override
 		public void update() {
-			if(this.getPlot() == null || !(this.worldObj.getBlockState(this.getPlot()).getBlock() instanceof PlotBlock))
-				this.worldObj.destroyBlock(getPos(), true);
+			if(this.getPlot() == null || !(this.world.getBlockState(this.getPlot()).getBlock() instanceof PlotBlock))
+				this.world.destroyBlock(getPos(), true);
 			if(this.getPlayer() != null){
 				IPlayerData data = this.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
 				if(data.getTotalPlaytime() != 0 && data.getTotalPlaytime() % 168000 == 0){
@@ -254,7 +252,7 @@ public class ApartmentBlock extends Block implements ITileEntityProvider{
 			return plot;
 		}
 		public PlotBlockTE getPlotTE(){
-			return (PlotBlockTE) this.worldObj.getTileEntity(getPlot());
+			return (PlotBlockTE) this.world.getTileEntity(getPlot());
 		}
 
 		public void setPlot(BlockPos plot) {

@@ -1,9 +1,8 @@
 package com.afg.rpmod.blocks;
 
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.client.gui.CityGui;
+import com.afg.rpmod.utils.CityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -21,9 +20,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import com.afg.rpmod.capabilities.IPlayerData;
-import com.afg.rpmod.client.gui.CityGui;
-import com.afg.rpmod.utils.CityUtils;
+import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class CityBlock extends Block implements ITileEntityProvider{
 
@@ -41,7 +39,7 @@ public class CityBlock extends Block implements ITileEntityProvider{
 
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		if(playerIn.worldObj.isRemote){
+		if(playerIn.world.isRemote){
 			if(this.getTE(worldIn, pos).getPlayer() == playerIn)
 				Minecraft.getMinecraft().displayGuiScreen(new CityGui(pos));
 		}
@@ -93,11 +91,11 @@ public class CityBlock extends Block implements ITileEntityProvider{
 		@Override
 		public void updateServerData(NBTTagCompound tag) {
 			if(tag.getString("playername") != ""){
-				this.setPlayer(this.worldObj.getPlayerEntityByName(tag.getString("playername")));
+				this.setPlayer(this.world.getPlayerEntityByName(tag.getString("playername")));
 			}
 			if(tag.getInteger("range") != 0)
 				this.setRange(tag.getInteger("range"));
-			this.worldObj.notifyBlockUpdate(pos, this.worldObj.getBlockState(getPos()), this.worldObj.getBlockState(getPos()), 3);
+			this.world.notifyBlockUpdate(pos, this.world.getBlockState(getPos()), this.world.getBlockState(getPos()), 3);
 		}
 
 		@Override
@@ -130,7 +128,7 @@ public class CityBlock extends Block implements ITileEntityProvider{
 		}
 
 		public void setRange(int range){
-			if(range > this.range && !CityUtils.canExpand(worldObj, this, range - this.range))
+			if(range > this.range && !CityUtils.canExpand(world, this, range - this.range))
 				return;
 			if(this.getPlayer() != null){
 				IPlayerData data = this.getPlayer().getCapability(IPlayerData.PLAYER_DATA, null);
@@ -155,7 +153,7 @@ public class CityBlock extends Block implements ITileEntityProvider{
 
 		public EntityPlayer getPlayer(){
 			if(this.uuid != null)
-				return this.worldObj.getPlayerEntityByUUID(this.uuid);
+				return this.world.getPlayerEntityByUUID(this.uuid);
 			return null;
 		}
 

@@ -1,8 +1,9 @@
 package com.afg.rpmod.client.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.blocks.ApartmentBlock;
+import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
+import com.afg.rpmod.network.UpdateTileEntityServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -10,18 +11,11 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-
 import org.lwjgl.input.Keyboard;
 
-import scala.Char;
-
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.blocks.ApartmentBlock;
-import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
-import com.afg.rpmod.network.UpdateTileEntityServer;
+import java.awt.*;
+import java.io.IOException;
 
 public class LandlordGui extends GuiScreen {
 	protected GuiTextField buyCost, rentCost, yRange, xzRange;
@@ -36,22 +30,22 @@ public class LandlordGui extends GuiScreen {
 
 	@Override
 	public void initGui(){
-		TileEntity t = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity t = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(t instanceof ApartmentBlockTE){
 			ApartmentBlockTE te = (ApartmentBlockTE) t;
-			this.buyCost = new GuiTextField(0, this.fontRendererObj, 0, 0, 110, 20);
+			this.buyCost = new GuiTextField(0, this.fontRenderer, 0, 0, 110, 20);
 			buyCost.setMaxStringLength(9);
 			this.buyCost.setFocused(true);
 
-			this.rentCost = new GuiTextField(0, this.fontRendererObj, 0, 0, 110, 20);
+			this.rentCost = new GuiTextField(0, this.fontRenderer, 0, 0, 110, 20);
 			rentCost.setMaxStringLength(9);
 
 			this.buttonList.add(new GuiButton(0, this.width / 2 - 90, this.height/2 + 32, 20, 20, "-"));
-			this.yRange = new GuiTextField(0, this.fontRendererObj, 0, 0, 30, 20);
+			this.yRange = new GuiTextField(0, this.fontRenderer, 0, 0, 30, 20);
 			this.buttonList.add(new GuiButton(1, this.width / 2 - 30, this.height/2 + 32, 20, 20, "+"));
 
 			this.buttonList.add(new GuiButton(2, this.width / 2 + 10, this.height/2 + 32, 20, 20, "-"));
-			this.xzRange = new GuiTextField(0, this.fontRendererObj, 0, 0, 30, 20);
+			this.xzRange = new GuiTextField(0, this.fontRenderer, 0, 0, 30, 20);
 			this.buttonList.add(new GuiButton(3, this.width / 2 + 70, this.height/2 + 32, 20, 20, "+"));
 
 
@@ -74,7 +68,7 @@ public class LandlordGui extends GuiScreen {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		ApartmentBlockTE te = (ApartmentBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		ApartmentBlockTE te = (ApartmentBlockTE) Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te != null){
 			NBTTagCompound tag = new NBTTagCompound();
 			int amount = 1;
@@ -126,7 +120,7 @@ public class LandlordGui extends GuiScreen {
 	public void updateScreen()
 	{
 		super.updateScreen();
-		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity te = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te instanceof ApartmentBlockTE){
 			NBTTagCompound tag = new NBTTagCompound();
 			if(!this.buyCost.getText().isEmpty() && Integer.parseInt(this.buyCost.getText()) != ((ApartmentBlockTE) te).getCost()){
@@ -163,29 +157,29 @@ public class LandlordGui extends GuiScreen {
 		//Creates a longer box without making new texture
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 90);
 
-		this.buyCost.xPosition = this.width/2 - 40;
-		this.buyCost.yPosition = this.height/2 - 32;
+		this.buyCost.x = this.width/2 - 40;
+		this.buyCost.y = this.height/2 - 32;
 		this.buyCost.drawTextBox();
 		if(!this.rented)
-			this.fontRendererObj.drawStringWithShadow("Buy Cost", this.width/2 - 93, this.height/2 - 27, Color.WHITE.getRGB());
+			this.fontRenderer.drawStringWithShadow("Buy Cost", this.width/2 - 93, this.height/2 - 27, Color.WHITE.getRGB());
 
-		this.rentCost.xPosition = this.width/2 - 40;
-		this.rentCost.yPosition = this.height/2 - 8;
+		this.rentCost.x = this.width/2 - 40;
+		this.rentCost.y = this.height/2 - 8;
 		this.rentCost.drawTextBox();
 		if(!this.rented)
-			this.fontRendererObj.drawStringWithShadow("Rent Cost", this.width/2 - 93, this.height/2 - 3, Color.WHITE.getRGB());
+			this.fontRenderer.drawStringWithShadow("Rent Cost", this.width/2 - 93, this.height/2 - 3, Color.WHITE.getRGB());
 
-		this.yRange.xPosition = this.width/2 - 65;
-		this.yRange.yPosition = this.height/2 + 32;
+		this.yRange.x = this.width/2 - 65;
+		this.yRange.y = this.height/2 + 32;
 		this.yRange.drawTextBox();	
 
-		this.xzRange.xPosition = this.width/2 + 35;
-		this.xzRange.yPosition = this.height/2 + 32;
+		this.xzRange.x = this.width/2 + 35;
+		this.xzRange.y = this.height/2 + 32;
 		this.xzRange.drawTextBox();
 
-		this.drawCenteredString(this.fontRendererObj, this.name, this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
-		this.drawCenteredString(this.fontRendererObj, "Height", this.width/2 - 50, this.height/2 + 20, Color.WHITE.getRGB());
-		this.drawCenteredString(this.fontRendererObj, "Length", this.width/2 + 50, this.height/2 + 20, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, this.name, this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Height", this.width/2 - 50, this.height/2 + 20, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Length", this.width/2 + 50, this.height/2 + 20, Color.WHITE.getRGB());
 		super.drawScreen(par1, par2, par3);
 	}
 

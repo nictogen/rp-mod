@@ -1,25 +1,21 @@
 package com.afg.rpmod.client.render.tileentities;
 
+import com.afg.rpmod.blocks.CookPan.CookPanTE;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import com.afg.rpmod.blocks.CookPan.CookPanTE;
 
 public class CookPanTESR extends TileEntitySpecialRenderer<CookPanTE> {
 
-	@Override
-	public void renderTileEntityAt(CookPanTE te, double x, double y, double z, float partialTicks, int destroyStage) {
+	@Override public void render(CookPanTE te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+	{
 		ItemStack stack = te.getCooking();
 		if (stack != null && stack.getItem() != null) {
 			GlStateManager.disableLighting();
@@ -34,7 +30,6 @@ public class CookPanTESR extends TileEntitySpecialRenderer<CookPanTE> {
 			GlStateManager.popMatrix();
 			GlStateManager.enableLighting();
 		}
-
 	}
 
 	private void renderFire(float partialTicks)
@@ -44,7 +39,7 @@ public class CookPanTESR extends TileEntitySpecialRenderer<CookPanTE> {
 		TextureAtlasSprite textureatlassprite = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_0");
 		TextureAtlasSprite textureatlassprite1 = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		float f5 = 0.0F;
 		int i = 0;

@@ -1,9 +1,7 @@
 package com.afg.rpmod.blocks;
 
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.jobs.Cook;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -25,8 +23,8 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import com.afg.rpmod.capabilities.IPlayerData;
-import com.afg.rpmod.jobs.Cook;
+import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class CookPan extends Block implements ITileEntityProvider{
 
@@ -57,7 +55,7 @@ public class CookPan extends Block implements ITileEntityProvider{
 					for(Item i : data.getJob().getAvailableRecipes()){
 						if(i == result){
 							this.getTE(worldIn, pos).cooking = new ItemStack(heldItem.getItem());
-							heldItem.stackSize--;
+							heldItem.setCount(heldItem.getCount() - 1);
 							return true;
 						}
 					}
@@ -71,10 +69,10 @@ public class CookPan extends Block implements ITileEntityProvider{
 					if(heldItem == null){
 						playerIn.setHeldItem(hand, new ItemStack(this.getTE(worldIn, pos).cooking.getItem(), 1));
 					} else if (heldItem.getItem() == this.getTE(worldIn, pos).cooking.getItem()){
-						playerIn.getHeldItem(hand).stackSize++;
+						playerIn.getHeldItem(hand).setCount(playerIn.getHeldItem(hand).getCount() + 1);
 					} else {
 						EntityItem item = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this.getTE(worldIn, pos).cooking.getItem(), 1));
-						worldIn.spawnEntityInWorld(item);
+						worldIn.spawnEntity(item);
 					}
 					data.setMoney(data.getMoney() + data.getJobLvl()*4);
 					data.setJobXP(data.getJobXP() + 1);
@@ -164,7 +162,7 @@ public class CookPan extends Block implements ITileEntityProvider{
 
 		public EntityPlayer getPlayer(){
 			if(this.uuid != null)
-				return this.worldObj.getPlayerEntityByUUID(this.uuid);
+				return this.world.getPlayerEntityByUUID(this.uuid);
 			return null;
 		}
 
@@ -194,7 +192,7 @@ public class CookPan extends Block implements ITileEntityProvider{
 				if(data.getJob() instanceof Cook){
 					this.timer += data.getJobLvl();
 					if(this.timer > 200){
-						this.cooking = new ItemStack(getCookingResult(this.cooking), 1 + this.worldObj.rand.nextInt(data.getJobLvl()));
+						this.cooking = new ItemStack(getCookingResult(this.cooking), 1 + this.world.rand.nextInt(data.getJobLvl()));
 						this.timer = 0;
 					}
 				}

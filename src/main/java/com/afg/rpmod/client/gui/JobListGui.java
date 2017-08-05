@@ -1,8 +1,10 @@
 package com.afg.rpmod.client.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.capabilities.IPlayerData;
+import com.afg.rpmod.jobs.Job;
+import com.afg.rpmod.jobs.Job.EnumJobType;
+import com.afg.rpmod.network.SendJobChoiceToServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -11,11 +13,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.capabilities.IPlayerData;
-import com.afg.rpmod.jobs.Job;
-import com.afg.rpmod.jobs.Job.EnumJobType;
-import com.afg.rpmod.network.SendJobChoiceToServer;
+import java.awt.*;
+import java.io.IOException;
 
 public class JobListGui extends GuiScreen {
 	public int page = 0, maxPage;
@@ -61,7 +60,7 @@ public class JobListGui extends GuiScreen {
 		case 0: this.page--; break;
 		case 1: this.page++; break;
 		}
-		IPlayerData data = Minecraft.getMinecraft().thePlayer.getCapability(IPlayerData.PLAYER_DATA, null);
+		IPlayerData data = Minecraft.getMinecraft().player.getCapability(IPlayerData.PLAYER_DATA, null);
 		if(button instanceof JobButton){
 			RpMod.networkWrapper.sendToServer(new SendJobChoiceToServer(((JobButton) button).job));
 			Minecraft.getMinecraft().displayGuiScreen(null);
@@ -87,7 +86,7 @@ public class JobListGui extends GuiScreen {
 		//Foreground(shorter than it should be)
 		//Creates a longer box without making new texture
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 90);
-		this.drawCenteredString(this.fontRendererObj, "Select Job", this.width/2, j + 8, Color.white.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Select Job", this.width/2, j + 8, Color.white.getRGB());
 		super.drawScreen(par1, par2, par3);
 	}
 
@@ -97,7 +96,7 @@ public class JobListGui extends GuiScreen {
 		private EnumJobType job;
 		public JobButton(int buttonId, int x, int y, int widthIn,
 				int heightIn, EnumJobType job, int page) {
-			super(buttonId, x, y, widthIn, heightIn, job.createJob(Minecraft.getMinecraft().thePlayer).getName());
+			super(buttonId, x, y, widthIn, heightIn, job.createJob(Minecraft.getMinecraft().player).getName());
 			this.page = page;
 			this.job = job;
 		}
@@ -107,20 +106,20 @@ public class JobListGui extends GuiScreen {
 		{
 			if (this.visible)
 			{
-				FontRenderer fontrenderer = mc.fontRendererObj;
+				FontRenderer fontrenderer = mc.fontRenderer;
 				mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+				this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 				int i = this.getHoverState(this.hovered);
 				GlStateManager.enableBlend();
 				GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + i * 20, this.width / 2, this.height);
-				this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+				this.drawTexturedModalRect(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+				this.drawTexturedModalRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(this.xPosition + 3, this.yPosition + 2, 0);
+				GlStateManager.translate(this.x + 3, this.y + 2, 0);
 				GlStateManager.scale(0.8, 0.8, 1.0);
-				mc.getRenderItem().renderItemAndEffectIntoGUI(mc.thePlayer, job.getDisplayItem(), 0, 0);
+				mc.getRenderItem().renderItemAndEffectIntoGUI(mc.player, job.getDisplayItem(), 0, 0);
 				GlStateManager.popMatrix();
 				this.mouseDragged(mc, mouseX, mouseY);
 				int j = 14737632;
@@ -140,7 +139,7 @@ public class JobListGui extends GuiScreen {
 					}
 
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(this.xPosition + 20, this.yPosition + (this.height - 8) / 2, 0);
+				GlStateManager.translate(this.x + 20, this.y + (this.height - 8) / 2, 0);
 				GlStateManager.scale(0.8, 0.8, 1.0);
 
 				this.drawString(fontrenderer, this.displayString, 0, 0, j);
@@ -162,18 +161,18 @@ public class JobListGui extends GuiScreen {
 		{
 			if (this.visible)
 			{
-				FontRenderer fontrenderer = mc.fontRendererObj;
+				FontRenderer fontrenderer = mc.fontRenderer;
 				GlStateManager.pushMatrix();
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+				this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 				int i = this.getHoverState(this.hovered) - 1;
 
 				if(this.left){
-					GlStateManager.translate(this.xPosition + 10, this.yPosition + 10, 0);
+					GlStateManager.translate(this.x + 10, this.y + 10, 0);
 					GlStateManager.rotate(180, 0.0f, 0.0f, 1.0f);
 					GlStateManager.translate(0, -10f, 0);
 				} else {
-					GlStateManager.translate(this.xPosition, this.yPosition	- 3, 0);
+					GlStateManager.translate(this.x, this.y	- 3, 0);
 				}
 
 				ResourceLocation loc = new ResourceLocation("textures/gui/world_selection.png");

@@ -50,7 +50,7 @@ public class Miner extends Job {
 		Item item = e.smelting.getItem();
 		for(Item xpSmelts: smeltsWithXP){
 			if(item == xpSmelts)
-				for(int i = 0; i < e.smelting.stackSize; i++)
+				for(int i = 0; i < e.smelting.getCount(); i++)
 					this.getData().setJobXP(this.getData().getJobXP() + 1);
 
 		}

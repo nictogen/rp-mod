@@ -1,5 +1,5 @@
 {
-	"parent": "rp-mod:block/apartmentBlock",
+	"parent": "rp-mod:block/apartment_block",
 	"display": {
 		"thirdperson": {
 			"rotation": [ 10, -45, 170 ],

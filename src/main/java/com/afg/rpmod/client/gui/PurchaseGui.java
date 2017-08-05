@@ -1,23 +1,19 @@
 package com.afg.rpmod.client.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
+import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
+import com.afg.rpmod.network.UpdateTileEntityServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
-import org.lwjgl.input.Keyboard;
-
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
-import com.afg.rpmod.network.UpdateTileEntityServer;
+import java.awt.*;
+import java.io.IOException;
 
 public class PurchaseGui extends GuiScreen {
 	private BlockPos pos;
@@ -29,7 +25,7 @@ public class PurchaseGui extends GuiScreen {
 
 	@Override
 	public void initGui(){
-		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity te = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te instanceof ApartmentBlockTE){
 
 			if(((ApartmentBlockTE) te).getRent() != 0)
@@ -46,25 +42,25 @@ public class PurchaseGui extends GuiScreen {
 	public void updateScreen()
 	{
 		super.updateScreen();
-		ApartmentBlockTE te = (ApartmentBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		ApartmentBlockTE te = (ApartmentBlockTE) Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te != null){
-			if(te.getPlayer() == Minecraft.getMinecraft().thePlayer)
+			if(te.getPlayer() == Minecraft.getMinecraft().player)
 				Minecraft.getMinecraft().displayGuiScreen(new ApartmentInfoGui(this.pos));
 		}
 	}
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		ApartmentBlockTE te = (ApartmentBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		ApartmentBlockTE te = (ApartmentBlockTE) Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te != null){
 			NBTTagCompound tag = new NBTTagCompound();
 			switch(button.id){
 			case 0: 
-				tag.setString("rent", Minecraft.getMinecraft().thePlayer.getName());
+				tag.setString("rent", Minecraft.getMinecraft().player.getName());
 				RpMod.networkWrapper.sendToServer(new UpdateTileEntityServer(tag, this.pos));
 				break;
 			case 1:
-				tag.setString("purchase", Minecraft.getMinecraft().thePlayer.getName());
+				tag.setString("purchase", Minecraft.getMinecraft().player.getName());
 				RpMod.networkWrapper.sendToServer(new UpdateTileEntityServer(tag, this.pos));
 				break;
 			}
@@ -88,10 +84,10 @@ public class PurchaseGui extends GuiScreen {
 		int j = (this.height - 100) / 2;
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 100);
 
-		this.drawCenteredString(this.fontRendererObj, "Purchase", this.width/2 - 23, this.height/2 - 45, Color.green.getRGB());
-		this.drawCenteredString(this.fontRendererObj, "or", this.width/2 + 12, this.height/2 - 45, Color.white.getRGB());
-		this.drawCenteredString(this.fontRendererObj, "Rent", this.width/2 + 34, this.height/2 - 44, Color.BLUE.getRGB());
-		this.drawCenteredString(this.fontRendererObj, "Landlord: " + this.owner, this.width/2, this.height/2 - 34, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Purchase", this.width/2 - 23, this.height/2 - 45, Color.green.getRGB());
+		this.drawCenteredString(this.fontRenderer, "or", this.width/2 + 12, this.height/2 - 45, Color.white.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Rent", this.width/2 + 34, this.height/2 - 44, Color.BLUE.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Landlord: " + this.owner, this.width/2, this.height/2 - 34, Color.WHITE.getRGB());
 		super.drawScreen(par1, par2, par3);
 	}
 }

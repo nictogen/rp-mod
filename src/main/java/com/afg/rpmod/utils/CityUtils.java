@@ -1,17 +1,16 @@
 package com.afg.rpmod.utils;
 
-import java.util.List;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
 import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
 import com.afg.rpmod.blocks.CityBlock.CityBlockTE;
 import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.List;
 
 public class CityUtils {
 	private static Predicate<TileEntity> pCity = new Predicate<TileEntity>() { 
@@ -30,7 +29,7 @@ public class CityUtils {
 		} };		
 		//TODO check nearby depending plots/apartments when decreasing range
 	public static boolean checkPermission(EntityPlayer player, BlockPos pos){
-		List<TileEntity> allTEs = player.worldObj.loadedTileEntityList;
+		List<TileEntity> allTEs = player.world.loadedTileEntityList;
 		boolean cancel = false;
 		for (TileEntity t : Collections2.filter(allTEs, pCity)) {
 			CityBlockTE te = (CityBlockTE) t;

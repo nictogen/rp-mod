@@ -1,25 +1,18 @@
 package com.afg.rpmod.client.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.blocks.ApartmentDoor.ApartmentDoorTE;
+import com.afg.rpmod.network.UpdateTileEntityServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
-import org.lwjgl.input.Keyboard;
-
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.blocks.ApartmentBlock;
-import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
-import com.afg.rpmod.blocks.ApartmentDoor.ApartmentDoorTE;
-import com.afg.rpmod.network.UpdateTileEntityServer;
+import java.awt.*;
+import java.io.IOException;
 
 public class DoorGui extends GuiScreen {
 
@@ -30,7 +23,7 @@ public class DoorGui extends GuiScreen {
 
 	@Override
 	public void initGui(){
-		TileEntity t = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity t = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(t instanceof ApartmentDoorTE){
 			ApartmentDoorTE te = (ApartmentDoorTE) t;
 			if(te.isLocked())
@@ -43,7 +36,7 @@ public class DoorGui extends GuiScreen {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		ApartmentDoorTE te = (ApartmentDoorTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		ApartmentDoorTE te = (ApartmentDoorTE) Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te != null){
 			NBTTagCompound tag = new NBTTagCompound();
 			switch(button.id){
@@ -70,7 +63,7 @@ public class DoorGui extends GuiScreen {
 		
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 100);
 
-		this.drawCenteredString(this.fontRendererObj, "Door Settings", this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Door Settings", this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
 		super.drawScreen(par1, par2, par3);
 	}
 

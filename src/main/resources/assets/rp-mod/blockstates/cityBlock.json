@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "rp-mod:cityBlock"
+    "model": "rp-mod:cityblock"
   },
   "variants": {
     "normal": [{}],

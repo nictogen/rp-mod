@@ -25,7 +25,7 @@ public class CityEventHandler {
 	@SubscribeEvent
 	public void checkExplosion(ExplosionEvent.Start e){
 		if(e.getExplosion().getExplosivePlacedBy() instanceof EntityPlayer)
-			e.setCanceled(CityUtils.checkPermission((EntityPlayer) e.getExplosion().getExplosivePlacedBy(), new BlockPos(e.getExplosion().getPosition().xCoord, e.getExplosion().getPosition().yCoord, e.getExplosion().getPosition().zCoord)));
+			e.setCanceled(CityUtils.checkPermission((EntityPlayer) e.getExplosion().getExplosivePlacedBy(), new BlockPos(e.getExplosion().getPosition().x, e.getExplosion().getPosition().y, e.getExplosion().getPosition().z)));
 	}
 	
 	

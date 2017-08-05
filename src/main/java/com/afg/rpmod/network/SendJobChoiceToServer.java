@@ -31,7 +31,7 @@ public class SendJobChoiceToServer implements IMessage{
 	public static class Handler implements IMessageHandler<SendJobChoiceToServer, IMessage> {
 		@Override
 		public IMessage onMessage(SendJobChoiceToServer message, MessageContext ctx){
-			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+			IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
 			mainThread.addScheduledTask(new Runner(message, ctx));
 			return null;
 		}
@@ -47,9 +47,9 @@ public class SendJobChoiceToServer implements IMessage{
 
 		@Override
 		public void run() {
-			IPlayerData data = (IPlayerData) ctx.getServerHandler().playerEntity.getCapability(IPlayerData.PLAYER_DATA, null);
+			IPlayerData data = (IPlayerData) ctx.getServerHandler().player.getCapability(IPlayerData.PLAYER_DATA, null);
 			if(data != null){
-				data.setJob(message.job.createJob(ctx.getServerHandler().playerEntity));
+				data.setJob(message.job.createJob(ctx.getServerHandler().player));
 				data.setJobXP(0);
 				data.setJobLvl(1);
 			}

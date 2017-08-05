@@ -1,24 +1,19 @@
 package com.afg.rpmod.client.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-
 import com.afg.rpmod.RpMod;
 import com.afg.rpmod.blocks.ApartmentBlock.ApartmentBlockTE;
 import com.afg.rpmod.capabilities.IPlayerData;
 import com.afg.rpmod.network.UpdateTileEntityServer;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+
+import java.awt.*;
+import java.io.IOException;
 
 public class ApartmentInfoGui extends GuiScreen {
 	private GuiTextField name;
@@ -32,11 +27,11 @@ public class ApartmentInfoGui extends GuiScreen {
 
 	@Override
 	public void initGui(){
-		this.name = new GuiTextField(0, this.fontRendererObj, 0, 0, 110, 20);
+		this.name = new GuiTextField(0, this.fontRenderer, 0, 0, 110, 20);
 		name.setMaxStringLength(23);
 		this.name.setFocused(true);
 
-		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity te = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te instanceof ApartmentBlockTE){
 			ApartmentBlockTE t = (ApartmentBlockTE) te;
 			this.name.setText("" + t.getName());
@@ -59,7 +54,7 @@ public class ApartmentInfoGui extends GuiScreen {
 	public void updateScreen()
 	{
 		super.updateScreen();
-		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity te = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te instanceof ApartmentBlockTE){
 			NBTTagCompound tag = new NBTTagCompound();
 			if(!this.name.getText().isEmpty() && ((ApartmentBlockTE) te).getName() != this.name.getText()){
@@ -69,7 +64,7 @@ public class ApartmentInfoGui extends GuiScreen {
 				RpMod.networkWrapper.sendToServer(new UpdateTileEntityServer(tag, this.pos));
 			}
 		}
-		IPlayerData data = Minecraft.getMinecraft().thePlayer.getCapability(IPlayerData.PLAYER_DATA, null);
+		IPlayerData data = Minecraft.getMinecraft().player.getCapability(IPlayerData.PLAYER_DATA, null);
 		if(data != null){
 			int ticks = (168000 - data.getTotalPlaytime() % 168000);
 			int hours = ticks/20/60/60;
@@ -90,18 +85,18 @@ public class ApartmentInfoGui extends GuiScreen {
 		int j = ((this.height - 100) / 2);
 		this.drawTexturedModalRect(i, j, 0, 0, 200, 100);
 		
-		this.name.xPosition = this.width/2 - 40;
-		this.name.yPosition = this.height/2 - 32;
+		this.name.x = this.width/2 - 40;
+		this.name.y = this.height/2 - 32;
 		this.name.drawTextBox();
-		this.fontRendererObj.drawStringWithShadow("Apt Name: ", this.width/2 - 93, this.height/2 - 27, Color.WHITE.getRGB());
+		this.fontRenderer.drawStringWithShadow("Apt Name: ", this.width/2 - 93, this.height/2 - 27, Color.WHITE.getRGB());
 		
-		this.drawCenteredString(this.fontRendererObj, "Apartment Info", this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
-		this.drawCenteredString(this.fontRendererObj, this.xz, this.width/2 - 60, this.height/2, Color.WHITE.getRGB());
-		this.drawCenteredString(this.fontRendererObj, this.y , this.width/2 - 60, this.height/2 + 20, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, "Apartment Info", this.width/2, this.height/2 - 45, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, this.xz, this.width/2 - 60, this.height/2, Color.WHITE.getRGB());
+		this.drawCenteredString(this.fontRenderer, this.y , this.width/2 - 60, this.height/2 + 20, Color.WHITE.getRGB());
 		if(this.renting){
-			this.drawCenteredString(this.fontRendererObj, "Time until next payment: ", this.width/2 + 33, this.height/2, Color.WHITE.getRGB());
-			this.drawCenteredString(this.fontRendererObj, time + "", this.width/2 + 33, this.height/2 + 15, Color.WHITE.getRGB());
-			this.drawCenteredString(this.fontRendererObj, "Payment: $" + this.rent, this.width/2 + 33, this.height/2 + 29, Color.green.getRGB());
+			this.drawCenteredString(this.fontRenderer, "Time until next payment: ", this.width/2 + 33, this.height/2, Color.WHITE.getRGB());
+			this.drawCenteredString(this.fontRenderer, time + "", this.width/2 + 33, this.height/2 + 15, Color.WHITE.getRGB());
+			this.drawCenteredString(this.fontRenderer, "Payment: $" + this.rent, this.width/2 + 33, this.height/2 + 29, Color.green.getRGB());
 		}
 		super.drawScreen(par1, par2, par3);
 	}

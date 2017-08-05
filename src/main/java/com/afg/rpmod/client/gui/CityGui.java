@@ -1,20 +1,16 @@
 package com.afg.rpmod.client.gui;
 
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-
+import com.afg.rpmod.RpMod;
+import com.afg.rpmod.blocks.CityBlock.CityBlockTE;
+import com.afg.rpmod.network.UpdateTileEntityServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.input.Keyboard;
 
-import com.afg.rpmod.RpMod;
-import com.afg.rpmod.blocks.CityBlock.CityBlockTE;
-import com.afg.rpmod.blocks.PlotBlock.PlotBlockTE;
-import com.afg.rpmod.network.UpdateTileEntityServer;
+import java.io.IOException;
 
 public class CityGui extends LandGui {
 
@@ -27,7 +23,7 @@ public class CityGui extends LandGui {
 	public void updateScreen()
 	{
 		super.updateScreen();
-		TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		TileEntity te = Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te instanceof CityBlockTE){
 			this.owner = ((CityBlockTE) te).getName();
 			this.text2.setText("" + ((CityBlockTE) te).range);
@@ -37,7 +33,7 @@ public class CityGui extends LandGui {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		CityBlockTE te = (CityBlockTE) Minecraft.getMinecraft().theWorld.getTileEntity(this.pos);
+		CityBlockTE te = (CityBlockTE) Minecraft.getMinecraft().world.getTileEntity(this.pos);
 		if(te != null){
 			NBTTagCompound tag = new NBTTagCompound();
 			int amount = 1;
